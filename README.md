@@ -46,18 +46,22 @@ pip install -r requirements.txt
 [aistudio.google.com](https://aistudio.google.com) → **Get API key** → karta shart emas.
 
 ### 4. Google Sheets (live baza)
-1. [Google Cloud Console](https://console.cloud.google.com) → loyiha yarating.
-2. **Google Sheets API** ni yoqing.
-3. **Service Account** yarating → JSON key yuklab oling → `credentials.json` deb saqlang.
-4. Google Sheet'ingizni service account email'iga (`...@...iam.gserviceaccount.com`)
-   **Viewer** sifatida ulashing.
-5. Sheet ID'ni URL'dan oling: `docs.google.com/spreadsheets/d/`**`<SHEET_ID>`**`/edit`.
+1. Google Sheet'ingizni **Viewer** yoki **Public** qilib ulashing.
+2. Sheet ID'ni URL'dan oling: `docs.google.com/spreadsheets/d/`**`<SHEET_ID>`**`/edit`.
+3. Agar service account ishlatmoqchi bo'lsangiz, [Google Cloud Console](https://console.cloud.google.com) →
+   loyiha yarating → **Google Sheets API** ni yoqing → **Service Account** yarating →
+   JSON key yuklab oling → `credentials.json` deb saqlang.
+4. Service account foydalansangiz, Sheet'ingizni shu account email'iga
+   (`...@...iam.gserviceaccount.com`) **Viewer** sifatida ulashing.
 
 **Sheet ustunlari** (1-qator = sarlavha):
 ```
 brand | model | ram | storage | color | camera_front | camera_back | processor | proc_tier | battery | os | price
 ```
 (`sample_data.csv` aynan shu tartibda — namuna sifatida ko'chiring.)
+
+> Eslatma: agar `credentials.json` bo'lmasa, bot public share qilingan Sheet'ni
+> authsiz o'qishga urinadi. Bu faqat Sheet haqiqatan ham viewer/public bo'lsa ishlaydi.
 
 `proc_tier` — protsessor darajasi 1–100 (siz qo'yasiz). **Ixtiyoriy:** bo'sh
 qoldirsangiz bot chipset nomidan taxminiy ball hisoblaydi.

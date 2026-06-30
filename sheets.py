@@ -10,7 +10,10 @@ import logging
 import os
 import re
 import time
+from io import StringIO
 from typing import Optional
+from urllib.parse import quote
+from urllib.request import urlopen
 
 from config import config
 from models import Phone
@@ -68,15 +71,28 @@ def _row_to_phone(row: dict) -> Phone:
 
 
 def _load_from_sheet() -> list[Phone]:
-    import gspread
-    from google.oauth2.service_account import Credentials
+    """Google Sheet'dan o'qiydi: credentials bo'lsa service account, bo'lmasa public CSV."""
+    if os.path.exists(config.google_credentials_path):
+        import gspread
+        from google.oauth2.service_account import Credentials
 
-    scopes = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-    creds = Credentials.from_service_account_file(config.google_credentials_path, scopes=scopes)
-    client = gspread.authorize(creds)
-    ws = client.open_by_key(config.google_sheet_id).worksheet(config.sheet_name)
-    records = ws.get_all_records()  # 1-qator = header
-    return [_row_to_phone(r) for r in records]
+        scopes = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+        creds = Credentials.from_service_account_file(config.google_credentials_path, scopes=scopes)
+        client = gspread.authorize(creds)
+        ws = client.open_by_key(config.google_sheet_id).worksheet(config.sheet_name)
+        records = ws.get_all_records()  # 1-qator = header
+        return [_row_to_phone(r) for r in records]
+
+    # Public sheet: viewer share qilingan bo'lsa auth kerak emas.
+    # gviz CSV endpoint tab nomi orqali ishlaydi.
+    sheet = quote(config.sheet_name, safe="")
+    url = (
+        f"https://docs.google.com/spreadsheets/d/{config.google_sheet_id}/gviz/tq"
+        f"?tqx=out:csv&sheet={sheet}"
+    )
+    with urlopen(url, timeout=20) as response:
+        text = response.read().decode("utf-8")
+    return [_row_to_phone(r) for r in csv.DictReader(StringIO(text))]
 
 
 def _load_from_csv(path: str = "sample_data.csv") -> list[Phone]:
@@ -89,8 +105,7 @@ def _load_from_csv(path: str = "sample_data.csv") -> list[Phone]:
 
 def load_phones() -> list[Phone]:
     """Manbadan telefonlar ro'yxatini yuklaydi (cachesiz, to'g'ridan-to'g'ri)."""
-    use_sheets = bool(config.google_sheet_id and os.path.exists(config.google_credentials_path))
-    if use_sheets:
+    if config.google_sheet_id:
         try:
             phones = _load_from_sheet()
             logger.info("Google Sheet'dan %d ta telefon yuklandi", len(phones))

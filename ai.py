@@ -2,6 +2,8 @@
 
 Gemini kaliti bo'lmasa yoki xato bo'lsa — oddiy qoidaviy (regex) fallback ishlaydi,
 shu bois bot kalitsiz ham ishlaydi (sodda rejimda).
+
+SDK: google-genai (yangi, google.generativeai deprecated).
 """
 from __future__ import annotations
 
@@ -23,20 +25,22 @@ Qoidalar:
 - Aniq bo'lmagan maydonlarni QOLDIRMA (yozma). Faqat aytilganini yoz.
 - iPhone -> brand="iPhone", os="iOS". Boshqa brendlar odatda os="Android"."""
 
-_model = None
+_REPLY_SYSTEM = """Sen do'stona telefon-maslahatchisan. Berilgan telefonlar ro'yxati
+asosida O'ZBEK TILIDA qisqa, chiroyli tavsiya yoz. Har bir telefonni 1 qatorda
+brend+model, asosiy ustunligi va narxi bilan keltir. 2-3 jumla izoh qo'sh. Emoji
+oz ishlat. Hech narsa to'qima — faqat berilgan ma'lumot.
+MUHIM: Markdown belgilaridan (*, **, _, #) FOYDALANMA. Qalin matn kerak bo'lsa
+faqat <b>...</b> HTML tegidan foydalan."""
+
+_client = None
 
 
-def _get_model():
-    global _model
-    if _model is None:
-        import google.generativeai as genai
-
-        genai.configure(api_key=config.gemini_api_key)
-        _model = genai.GenerativeModel(
-            config.gemini_model,
-            system_instruction=_PARSE_SYSTEM,
-        )
-    return _model
+def _get_client():
+    global _client
+    if _client is None:
+        from google import genai
+        _client = genai.Client(api_key=config.gemini_api_key)
+    return _client
 
 
 # ---------- parse_query ----------
@@ -45,14 +49,19 @@ def parse_query(text: str) -> QueryFilter:
     """Tabiiy til so'rovini QueryFilter ga aylantiradi (Gemini, fallback regex)."""
     if config.ai_enabled:
         try:
-            model = _get_model()
-            resp = model.generate_content(
-                text,
-                generation_config={
-                    "response_mime_type": "application/json",
-                    "response_schema": QUERY_FILTER_SCHEMA,
-                    "temperature": 0,
-                },
+            from google import genai
+            from google.genai import types
+
+            client = _get_client()
+            resp = client.models.generate_content(
+                model=config.gemini_model,
+                contents=text,
+                config=types.GenerateContentConfig(
+                    system_instruction=_PARSE_SYSTEM,
+                    response_mime_type="application/json",
+                    response_schema=QUERY_FILTER_SCHEMA,
+                    temperature=0,
+                ),
             )
             data = json.loads(resp.text)
             return QueryFilter.from_dict(data)
@@ -62,9 +71,11 @@ def parse_query(text: str) -> QueryFilter:
 
 
 _BRANDS = ["samsung", "iphone", "apple", "xiaomi", "redmi", "realme", "oppo",
-           "vivo", "honor", "huawei", "infinix", "tecno", "nokia", "oneplus", "poco"]
+           "vivo", "honor", "huawei", "infinix", "tecno", "nokia", "oneplus", "poco",
+           "motorola", "google", "nothing", "huawei"]
 _COLORS = {"qora": "qora", "oq": "oq", "ko'k": "ko'k", "kok": "ko'k", "yashil": "yashil",
-           "qizil": "qizil", "kulrang": "kulrang", "oltin": "oltin", "kumush": "kumush"}
+           "qizil": "qizil", "kulrang": "kulrang", "oltin": "oltin", "kumush": "kumush",
+           "binafsha": "binafsha", "titan": "titan"}
 
 
 def _fallback_parse(text: str) -> QueryFilter:
@@ -78,12 +89,12 @@ def _fallback_parse(text: str) -> QueryFilter:
                 f.os = "iOS"
             break
 
-    # RAM: "12 gb ram" / "8gb"
+    # RAM: "12 gb ram" / "8gb ram" / "ram 8"
     m = re.search(r"(\d{1,2})\s*(?:gb)?\s*ram", t) or re.search(r"ram\s*(\d{1,2})", t)
     if m:
         f.ram_min = int(m.group(1))
 
-    # Narx: "3 mln", "500 ming", "2000000". "atrofida/chamasi/yaqin" -> target, aks holda gacha.
+    # Narx: "atrofida/chamasi/yaqin" -> target, aks holda -> price_max
     price_val = _parse_price(t)
     if price_val:
         around = any(w in t for w in ("atrofida", "atrof", "chamasi", "taxminan",
@@ -95,7 +106,8 @@ def _fallback_parse(text: str) -> QueryFilter:
     if any(w in t for w in ("arzon", "tejamkor", "byudjet")):
         f.price_sensitive = True
 
-    if any(w in t for w in ("kamera zo'r", "zor kamera", "kuchli kamera", "yaxshi kamera", "kamera yaxshi")):
+    if any(w in t for w in ("kamera zo'r", "zor kamera", "kuchli kamera",
+                             "yaxshi kamera", "kamera yaxshi", "kamera kuchli")):
         f.camera_priority = "high"
 
     for word, color in _COLORS.items():
@@ -128,27 +140,19 @@ def _fallback_parse(text: str) -> QueryFilter:
 
 
 def _parse_price(t: str) -> int | None:
-    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(mln|million|million|mil)", t)
+    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(mln|million|mil)\b", t)
     if m:
         return int(float(m.group(1).replace(",", ".")) * 1_000_000)
     m = re.search(r"(\d+(?:[.,]\d+)?)\s*(ming|tisyach|k)\b", t)
     if m:
         return int(float(m.group(1).replace(",", ".")) * 1_000)
-    m = re.search(r"\b(\d{6,9})\b", t)  # yalang'och katta raqam = narx
+    m = re.search(r"\b(\d{6,9})\b", t)
     if m:
         return int(m.group(1))
     return None
 
 
 # ---------- format_reply ----------
-
-_REPLY_SYSTEM = """Sen do'stona telefon-maslahatchisan. Berilgan telefonlar ro'yxati
-asosida O'ZBEK TILIDA qisqa, chiroyli tavsiya yoz. Har bir telefonni 1 qatorda
-brend+model, asosiy ustunligi va narxi bilan keltir. 2-3 jumla izoh qo'sh. Emoji
-oz ishlat. Hech narsa to'qima — faqat berilgan ma'lumot.
-MUHIM: Markdown belgilaridan (*, **, _, #) FOYDALANMA. Qalin matn kerak bo'lsa
-faqat <b>...</b> HTML tegidan foydalan."""
-
 
 def format_reply(phones: list[Phone], f: QueryFilter) -> str:
     """Top telefonlardan o'zbekcha tavsiya matni (Gemini, fallback shablon)."""
@@ -157,17 +161,21 @@ def format_reply(phones: list[Phone], f: QueryFilter) -> str:
 
     if config.ai_enabled:
         try:
-            import google.generativeai as genai
+            from google import genai
+            from google.genai import types
 
-            genai.configure(api_key=config.gemini_api_key)
-            model = genai.GenerativeModel(config.gemini_model, system_instruction=_REPLY_SYSTEM)
+            client = _get_client()
             payload = {
                 "so'rov": f.free_text or "",
                 "telefonlar": [_phone_dict(p) for p in phones],
             }
-            resp = model.generate_content(
-                json.dumps(payload, ensure_ascii=False),
-                generation_config={"temperature": 0.4},
+            resp = client.models.generate_content(
+                model=config.gemini_model,
+                contents=json.dumps(payload, ensure_ascii=False),
+                config=types.GenerateContentConfig(
+                    system_instruction=_REPLY_SYSTEM,
+                    temperature=0.4,
+                ),
             )
             txt = (resp.text or "").strip()
             if txt:
@@ -182,7 +190,7 @@ def _phone_dict(p: Phone) -> dict:
     return {
         "brand": p.brand, "model": p.model, "ram": p.ram, "storage": p.storage,
         "camera_back": p.camera_back, "battery": p.battery, "os": p.os,
-        "color": p.color, "price": p.price,
+        "color": p.color, "price": p.price, "processor": p.processor,
     }
 
 

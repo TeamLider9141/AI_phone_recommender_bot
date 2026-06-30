@@ -5,7 +5,7 @@ Samsung,Galaxy A15,4,128,Qora,13,50,Helio G99,45,5000,Android,2300000
 iPhone,15 Pro Max,8,256,Titan,12,48,A17 Pro,98,4441,iOS,18900000
 iPhone,13,4,128,Oq,12,12,A15 Bionic,78,3240,iOS,9200000
 Xiaomi,Redmi Note 13 Pro,8,256,Ko'k,16,200,Helio G99 Ultra,50,5100,Android,3700000
-Xiaomi,Redmi 13C,6,128,Yashil,8,50,Helio G85,30,5000,Android,1800000
+Xiaomi,Redmi 13C,6,512,Yashil,8,50,Helio G85,30,5000,Android,1800000
 Xiaomi,Poco X6 Pro,12,512,Qora,16,64,Dimensity 8300,82,5000,Android,4600000
 Redmi,Note 12,4,64,Qora,13,50,Snapdragon 685,33,5000,Android,2100000
 Realme,12 Pro,8,256,Kulrang,32,50,Snapdragon 6 Gen 1,52,5000,Android,4200000
@@ -19,7 +19,7 @@ Samsung,Galaxy A35,8,128,Ko'k,13,50,Exynos 1380,58,5000,Android,4300000
 Samsung,Galaxy M34,6,128,Yashil,13,50,Exynos 1280,46,6000,Android,3500000
 Samsung,Galaxy Z Flip5,8,256,Binafsha,10,12,Snapdragon 8 Gen 2,96,3700,Android,14900000
 iPhone,15,6,128,Qora,12,48,A16 Bionic,93,3349,iOS,15100000
-iPhone,14,6,128,Oq,12,12,A15 Bionic,84,3279,iOS,11800000
+Iphone,14,12,512,Oq,12,12,A15 Bionic,84,3279,iOS,11800000
 iPhone,12,4,64,Ko'k,12,12,A14 Bionic,70,2815,iOS,7600000
 Xiaomi,14,12,256,Oq,32,50,Snapdragon 8 Gen 3,97,4610,Android,10900000
 Xiaomi,13T,12,256,Qora,20,50,Dimensity 8200-Ultra,85,5000,Android,6200000
