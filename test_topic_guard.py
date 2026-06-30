@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import ai
 import models
+from topic_guard import OffTopicGuard
 
 
 def test_phone_topic_classifier() -> None:
@@ -34,10 +35,29 @@ def test_gemini_schema_requires_topic_classification() -> None:
     assert "is_phone_related" in models.QUERY_FILTER_SCHEMA["required"]
 
 
+def test_second_off_topic_inside_window_blocks_for_one_hour() -> None:
+    guard = OffTopicGuard()
+
+    assert guard.register_off_topic(7, now=100.0) == "warn"
+    assert guard.register_off_topic(7, now=3699.0) == "blocked"
+    assert guard.is_blocked(7, now=7298.0) is True
+    assert guard.is_blocked(7, now=7299.0) is False
+
+
+def test_expired_first_strike_starts_new_warning() -> None:
+    guard = OffTopicGuard()
+
+    assert guard.register_off_topic(7, now=100.0) == "warn"
+    assert guard.register_off_topic(7, now=3700.0) == "warn"
+    assert guard.is_blocked(7, now=3700.0) is False
+
+
 def main_test() -> None:
     test_phone_topic_classifier()
     test_fallback_parse_carries_topic_classification()
     test_gemini_schema_requires_topic_classification()
+    test_second_off_topic_inside_window_blocks_for_one_hour()
+    test_expired_first_strike_starts_new_warning()
     print("topic guard tests passed")
 
 
