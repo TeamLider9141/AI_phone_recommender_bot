@@ -19,6 +19,10 @@ logger = logging.getLogger(__name__)
 _PARSE_SYSTEM = """Sen telefon do'koni yordamchisisan. Foydalanuvchining o'zbekcha
 (yoki rus/ingliz aralash) so'rovini O'QIB, qidiruv filtrini JSON ko'rinishida qaytar.
 Qoidalar:
+- is_phone_related=true faqat telefon/smartfon tanlash, model, narx,
+  taqqoslash yoki telefon xususiyatlari haqida bo'lsa.
+- Ertak, inson ongi, ob-havo, siyosat, matematika va umumiy suhbat uchun
+  is_phone_related=false qaytar va boshqa filtrlarni yozma.
 - Narxni so'mga aylantir: "3 mln"/"3 million" -> 3000000, "500 ming" -> 500000.
 - "arzon", "tejamkor" -> price_sensitive=true (price_max yo'q bo'lsa ham).
 - "kuchli/yaxshi/zo'r kamera" -> camera_priority="high".
@@ -95,6 +99,8 @@ def parse_query(text: str) -> QueryFilter:
                 ),
             )
             data = json.loads(resp.text)
+            if not isinstance(data.get("is_phone_related"), bool):
+                data["is_phone_related"] = is_phone_related_text(text)
             return QueryFilter.from_dict(data)
         except Exception:  # noqa: BLE001
             logger.exception("Gemini parse xatosi, regex fallback ishlatilyapti")
@@ -116,10 +122,30 @@ _COLORS = {"qora": "qora", "oq": "oq", "ko'k": "ko'k", "kok": "ko'k", "yashil": 
            "qizil": "qizil", "kulrang": "kulrang", "oltin": "oltin", "kumush": "kumush",
            "binafsha": "binafsha", "titan": "titan"}
 
+_PHONE_TOPIC_TERMS = (
+    "telefon", "smartfon", "smartphone", "phone", "mobil", "android", "iphone",
+    "ios", "kamera", "camera", "batareya", "batareyka", "battery", "ram",
+    "xotira", "storage", "processor", "protsessor", "chipset", "snapdragon",
+    "mediatek", "dimensity", "exynos",
+)
+
+
+def is_phone_related_text(text: str) -> bool:
+    """Matnda telefon mavzusiga oid aniq signal borligini tekshiradi."""
+    normalized = text.casefold()
+    terms = (*_PHONE_TOPIC_TERMS, *_BRANDS)
+    return any(
+        re.search(rf"(?<!\w){re.escape(term)}(?!\w)", normalized)
+        for term in terms
+    )
+
 
 def _fallback_parse(text: str) -> QueryFilter:
     t = text.lower()
-    f = QueryFilter(free_text=text)
+    f = QueryFilter(
+        free_text=text,
+        is_phone_related=is_phone_related_text(text),
+    )
 
     _UPPER_BRANDS = {"zte", "lg", "htc"}
     if "yoki" in t:
