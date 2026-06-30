@@ -72,7 +72,8 @@ def parse_query(text: str) -> QueryFilter:
 
 _BRANDS = ["samsung", "iphone", "apple", "xiaomi", "redmi", "realme", "oppo",
            "vivo", "honor", "huawei", "infinix", "tecno", "nokia", "oneplus", "poco",
-           "motorola", "google", "nothing", "huawei"]
+           "motorola", "google", "nothing", "zte", "lenovo", "sony", "lg", "asus",
+           "meizu", "micromax", "wiko", "alcatel", "blackberry", "htc"]
 _COLORS = {"qora": "qora", "oq": "oq", "ko'k": "ko'k", "kok": "ko'k", "yashil": "yashil",
            "qizil": "qizil", "kulrang": "kulrang", "oltin": "oltin", "kumush": "kumush",
            "binafsha": "binafsha", "titan": "titan"}
@@ -82,11 +83,17 @@ def _fallback_parse(text: str) -> QueryFilter:
     t = text.lower()
     f = QueryFilter(free_text=text)
 
+    # Acronym brendlar (katta harf): ZTE, LG, HTC, ASUS
+    _UPPER_BRANDS = {"zte", "lg", "htc"}
     for b in _BRANDS:
         if b in t:
-            f.brand = "iPhone" if b in ("iphone", "apple") else b.capitalize()
             if b in ("iphone", "apple"):
+                f.brand = "iPhone"
                 f.os = "iOS"
+            elif b in _UPPER_BRANDS:
+                f.brand = b.upper()
+            else:
+                f.brand = b.capitalize()
             break
 
     # RAM: "12 gb ram" / "8gb ram" / "ram 8"
@@ -131,8 +138,9 @@ def _fallback_parse(text: str) -> QueryFilter:
     elif "katta batareyka" in t or "katta batareya" in t:
         f.sort_by = "battery"
 
-    # "top 10", "10 ta", "eng arzon 5 ta"
-    m = re.search(r"(?:top\s*)?(\d{1,2})\s*ta\b", t) or re.search(r"top\s*(\d{1,2})", t)
+    # "top 10", "10 ta", "eng arzon 5 ta", "5 modeli", "5 dona"
+    m = (re.search(r"(?:top\s*)?(\d{1,2})\s*(?:ta|modeli?|dona|tasi?)\b", t)
+         or re.search(r"top\s*(\d{1,2})", t))
     if m:
         f.limit = max(1, min(20, int(m.group(1))))
 
