@@ -72,8 +72,15 @@ def parse_query(text: str) -> QueryFilter:
 
 _BRANDS = ["samsung", "iphone", "apple", "xiaomi", "redmi", "realme", "oppo",
            "vivo", "honor", "huawei", "infinix", "tecno", "nokia", "oneplus", "poco",
-           "motorola", "google", "nothing", "zte", "lenovo", "sony", "lg", "asus",
-           "meizu", "micromax", "wiko", "alcatel", "blackberry", "htc"]
+           "motorola", "google", "pixel", "nothing", "zte", "lenovo", "sony", "lg",
+           "asus", "meizu", "micromax", "wiko", "alcatel", "blackberry", "htc"]
+
+# Maxsus brand nomlari: so'rovdagi kalit → Sheet'dagi brand qiymati
+_BRAND_MAP = {
+    "pixel": "Google",   # "Pixel 8" → brand="Google"
+    "apple": "iPhone",
+    "iphone": "iPhone",
+}
 _COLORS = {"qora": "qora", "oq": "oq", "ko'k": "ko'k", "kok": "ko'k", "yashil": "yashil",
            "qizil": "qizil", "kulrang": "kulrang", "oltin": "oltin", "kumush": "kumush",
            "binafsha": "binafsha", "titan": "titan"}
@@ -83,17 +90,17 @@ def _fallback_parse(text: str) -> QueryFilter:
     t = text.lower()
     f = QueryFilter(free_text=text)
 
-    # Acronym brendlar (katta harf): ZTE, LG, HTC, ASUS
     _UPPER_BRANDS = {"zte", "lg", "htc"}
     for b in _BRANDS:
         if b in t:
-            if b in ("iphone", "apple"):
-                f.brand = "iPhone"
-                f.os = "iOS"
+            if b in _BRAND_MAP:
+                f.brand = _BRAND_MAP[b]
             elif b in _UPPER_BRANDS:
                 f.brand = b.upper()
             else:
                 f.brand = b.capitalize()
+            if f.brand == "iPhone":
+                f.os = "iOS"
             break
 
     # RAM: "12 gb ram" / "8gb ram" / "ram 8"

@@ -22,7 +22,12 @@ class Phone:
     price: Optional[int] = None          # so'm yoki boshqa birlik
 
     def title(self) -> str:
-        parts = [p for p in (self.brand, self.model) if p]
+        brand = (self.brand or "").strip()
+        model = (self.model or "").strip()
+        # Model brend nomi bilan boshlanса takrorlanmaslik uchun (masalan brand="iPhone" model="iPhone 13")
+        if brand and model.lower().startswith(brand.lower()):
+            return model if model else brand
+        parts = [p for p in (brand, model) if p]
         return " ".join(parts) if parts else "Noma'lum telefon"
 
     def short_spec(self) -> str:
