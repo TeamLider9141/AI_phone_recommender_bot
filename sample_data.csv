@@ -1,0 +1,16 @@
+brand,model,ram,storage,color,camera_front,camera_back,processor,proc_tier,battery,os,price
+Samsung,Galaxy S24 Ultra,12,256,Qora,12,200,Snapdragon 8 Gen 3,100,5000,Android,16500000
+Samsung,Galaxy A55,8,128,Ko'k,32,50,Exynos 1480,62,5000,Android,5200000
+Samsung,Galaxy A15,4,128,Qora,13,50,Helio G99,45,5000,Android,2300000
+iPhone,15 Pro Max,8,256,Titan,12,48,A17 Pro,98,4441,iOS,18900000
+iPhone,13,4,128,Oq,12,12,A15 Bionic,78,3240,iOS,9200000
+Xiaomi,Redmi Note 13 Pro,8,256,Ko'k,16,200,Helio G99 Ultra,50,5100,Android,3700000
+Xiaomi,Redmi 13C,6,128,Yashil,8,50,Helio G85,30,5000,Android,1800000
+Xiaomi,Poco X6 Pro,12,512,Qora,16,64,Dimensity 8300,82,5000,Android,4600000
+Redmi,Note 12,4,64,Qora,13,50,Snapdragon 685,33,5000,Android,2100000
+Realme,12 Pro,8,256,Kulrang,32,50,Snapdragon 6 Gen 1,52,5000,Android,4200000
+Infinix,Hot 40i,8,256,Qora,8,50,Helio G85,30,5000,Android,1900000
+Tecno,Camon 30,8,256,Oq,50,50,Helio G99,45,5000,Android,3100000
+Honor,X9b,12,256,Yashil,16,108,Snapdragon 6 Gen 1,52,5800,Android,4900000
+Oppo,Reno 11F,8,256,Ko'k,32,64,Dimensity 7050,60,5000,Android,4400000
+Vivo,Y36,8,128,Oltin,16,50,Snapdragon 680,28,5000,Android,2600000
