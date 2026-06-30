@@ -30,7 +30,7 @@ class Config:
     admin_ids: list[int] = field(default_factory=list)
     cache_ttl: int = 300       # soniya
     gemini_model: str = "gemini-2.0-flash"
-    max_results: int = 10      # bitta javobда eng ko'pi bilan nechta telefon (abuse cap)
+    max_results: int = 20      # bitta javobда eng ko'pi bilan nechta telefon (abuse cap)
     rate_max: int = 15         # rate_window ichida ruxsat etilgan so'rov soni
     rate_window: int = 60      # rate limit oynasi (soniya)
 
@@ -49,7 +49,7 @@ def load_config() -> Config:
         admin_ids=_int_list(os.getenv("ADMIN_IDS")),
         cache_ttl=int(os.getenv("CACHE_TTL", "300")),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip(),
-        max_results=int(os.getenv("MAX_RESULTS", "10")),
+        max_results=int(os.getenv("MAX_RESULTS", "20")),
         rate_max=int(os.getenv("RATE_MAX", "15")),
         rate_window=int(os.getenv("RATE_WINDOW", "60")),
     )

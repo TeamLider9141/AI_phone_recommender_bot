@@ -21,8 +21,16 @@ def _model_tokens(model: str, brand: str | None) -> list[str]:
 
 def _matches_hard(p: Phone, f: QueryFilter) -> bool:
     """Qattiq shartlar: biror shart buzilsa telefon tushib qoladi."""
-    if f.brand and (p.brand or "").lower() != f.brand.lower():
-        # iPhone uchun "apple"/"iphone" ikkalasini ham qabul qilamiz
+    # Brand: yoki brand_options (OR) yoki brand (AND)
+    if f.brand_options:
+        pb = (p.brand or "").lower()
+        _iphone = {"iphone", "apple"}
+        if not any(
+            b.lower() == pb or (b.lower() in _iphone and pb in _iphone)
+            for b in f.brand_options
+        ):
+            return False
+    elif f.brand and (p.brand or "").lower() != f.brand.lower():
         if not (f.brand.lower() in ("iphone", "apple") and (p.brand or "").lower() in ("iphone", "apple")):
             return False
     # Model so'ralgan bo'lsa: barcha model tokenlari p.model ichida bo'lishi shart.
@@ -33,8 +41,29 @@ def _matches_hard(p: Phone, f: QueryFilter) -> bool:
             return False
     if f.os and (p.os or "").lower() != f.os.lower():
         return False
-    if f.color and f.color.lower() not in (p.color or "").lower():
+    # Rang: yoki color_options (OR) yoki color (AND)
+    if f.color_options:
+        pc = (p.color or "").lower()
+        if not any(c.lower() in pc for c in f.color_options):
+            return False
+    elif f.color and f.color.lower() not in (p.color or "").lower():
         return False
+    # Cross-param OR shartlar: or_conditions ichidan BIRORTASI mos kelsa kifoya
+    if f.or_conditions:
+        def _cond_ok(cond: dict) -> bool:
+            if cond.get("ram_min") and (p.ram or 0) < cond["ram_min"]:
+                return False
+            if cond.get("storage_min") and (p.storage or 0) < cond["storage_min"]:
+                return False
+            if cond.get("battery_min") and (p.battery or 0) < cond["battery_min"]:
+                return False
+            if cond.get("price_max") and p.price and p.price > cond["price_max"]:
+                return False
+            if cond.get("price_min") and p.price and p.price < cond["price_min"]:
+                return False
+            return True
+        if not any(_cond_ok(c) for c in f.or_conditions):
+            return False
     if f.ram_min and (p.ram or 0) < f.ram_min:
         return False
     if f.storage_min and (p.storage or 0) < f.storage_min:

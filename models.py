@@ -72,12 +72,17 @@ class QueryFilter:
     sort_by: Optional[str] = None        # SORT_KEYS dan biri
     limit: Optional[int] = None          # "top 10" -> 10
     free_text: Optional[str] = None      # qolgan, structuredga tushmagan niyat
+    # OR mantiqiy shartlar
+    brand_options: list = field(default_factory=list)   # ["Samsung","Xiaomi"] — brand OR
+    color_options: list = field(default_factory=list)   # ["qora","oq"] — color OR
+    or_conditions: list = field(default_factory=list)   # [{"ram_min":16},{"storage_min":512}] — cross-param OR
 
     @classmethod
     def from_dict(cls, data: dict) -> "QueryFilter":
         """Gemini qaytargan JSON dict dan xavfsiz qurish (begona kalitlarni tashlab)."""
         allowed = {f.name for f in cls.__dataclass_fields__.values()}  # type: ignore[attr-defined]
-        clean = {k: v for k, v in (data or {}).items() if k in allowed and v not in ("", None)}
+        clean = {k: v for k, v in (data or {}).items()
+                 if k in allowed and v is not None and v != "" and v != []}
         cp = clean.get("camera_priority")
         if cp not in ("none", "low", "high"):
             clean["camera_priority"] = "none"
@@ -90,6 +95,23 @@ class QueryFilter:
                 clean["limit"] = max(1, min(int(clean["limit"]), config.max_results))
             except (TypeError, ValueError):
                 clean.pop("limit", None)
+        # List maydonlar: type tekshirish + or_conditions tozalash
+        for lf in ("brand_options", "color_options"):
+            if lf in clean and not isinstance(clean[lf], list):
+                clean.pop(lf, None)
+        if "or_conditions" in clean:
+            ors = clean["or_conditions"]
+            _valid = {"ram_min", "storage_min", "battery_min", "price_max", "price_min"}
+            if isinstance(ors, list):
+                clean["or_conditions"] = [
+                    {k: int(v) for k, v in c.items() if k in _valid
+                     and str(v).lstrip("-").isdigit()}
+                    for c in ors if isinstance(c, dict)
+                ]
+                if not any(clean["or_conditions"]):
+                    clean.pop("or_conditions")
+            else:
+                clean.pop("or_conditions")
         return cls(**clean)
 
 
@@ -136,7 +158,20 @@ QUERY_FILTER_SCHEMA = {
                            "'protsessor bo'yicha'->processor, 'ko'p ram'->ram, "
                            "'ko'p xotira'->storage, 'katta batareyka'->battery",
         },
-        "limit": {"type": "integer", "description": "'top 10', 'eng arzon 5 ta' -> nechta natija"},
+        "limit": {"type": "integer", "description": "'top 10', 'top 20', 'eng arzon 5 ta' -> nechta natija"},
         "free_text": {"type": "string", "description": "Strukturaga tushmagan qo'shimcha niyat"},
+        "brand_options": {
+            "type": "array", "items": {"type": "string"},
+            "description": "'Samsung yoki Xiaomi' → ['Samsung','Xiaomi']. Faqat 'yoki' orasida brand bo'lsa. brand bo'sh qoladi.",
+        },
+        "color_options": {
+            "type": "array", "items": {"type": "string"},
+            "description": "'qora yoki oq' → ['qora','oq']. Faqat 'yoki' orasida rang bo'lsa. color bo'sh qoladi.",
+        },
+        "or_conditions": {
+            "type": "array", "items": {"type": "object"},
+            "description": "Turli parametrlar uchun OR: '16GB RAM yoki 512GB xotira' → [{\"ram_min\":16},{\"storage_min\":512}]. "
+                           "Faqat turli xil maydonlar yoki-langan bo'lsa.",
+        },
     },
 }

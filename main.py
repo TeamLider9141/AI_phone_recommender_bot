@@ -72,7 +72,22 @@ async def _process(text: str) -> tuple[str, QueryFilter, bool]:
             return ai.NOT_FOUND, f, False
         reply = ai.format_reply(top, f)
         if relaxed:
-            reply += RELAX_NOTE
+            has_price = bool(f.price_max or f.price_min or f.price_target)
+            if has_price:
+                wants_exp = (f.sort_by == "price_desc" or
+                             bool(f.price_min and not f.price_max and not f.price_target))
+                alt_f = QueryFilter(
+                    brand=f.brand, os=f.os,
+                    sort_by="price_desc" if wants_exp else "price_asc",
+                )
+                alt_top, _ = recommend(phones, alt_f, limit=5)
+                note = "😔 Kechirasiz, bu narx oralig'idagi telefonlar bazamizda yo'q edi."
+                label = ("💰 Bizdagi eng qimmat telefonlar:" if wants_exp
+                         else "💰 Bizdagi eng arzon telefonlar:")
+                reply = note + "\n\n" + ai.simple_reply(alt_top or top, label)
+                f = alt_f
+            else:
+                reply += RELAX_NOTE
         if ai.is_dump_request(text):
             reply += DUMP_NOTE
         return reply, f, True
