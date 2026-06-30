@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
+from collections import defaultdict
 from dataclasses import replace
 
 from aiogram import Bot, Dispatcher, F
@@ -21,8 +23,25 @@ from recommender import recommend
 # Foydalanuvchining oxirgi so'rov filtri (chat_id -> QueryFilter). Tugma bosilganda kerak.
 USER_FILTERS: dict[int, QueryFilter] = {}
 
+# Rate limit: har chat_id uchun so'rov vaqtlari (scraping/abuse'ga qarshi).
+_RATE: dict[int, list[float]] = defaultdict(list)
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("bot")
+
+RATE_MSG = "⏳ Juda ko'p so'rov yubordingiz. Iltimos birozdan keyin urinib ko'ring."
+DUMP_NOTE = f"\n\n🔒 <i>Xavfsizlik uchun faqat eng mos {config.max_results} tasi ko'rsatiladi.</i>"
+
+
+def _check_rate(chat_id: int) -> bool:
+    """rate_window ichida rate_max dan oshmasa True. Oshsa False (cheklash)."""
+    now = time.time()
+    times = _RATE[chat_id]
+    times[:] = [t for t in times if now - t < config.rate_window]
+    if len(times) >= config.rate_max:
+        return False
+    times.append(now)
+    return True
 
 WELCOME = (
     "Assalomu alaykum! 👋\n\n"
@@ -37,18 +56,26 @@ WELCOME = (
 RELAX_NOTE = "\n\n⚠️ <i>Aniq mos kelmadi, shu sababli shartlarni biroz yumshatib eng yaqinlarini berdim.</i>"
 
 
-async def _process(text: str) -> tuple[str, QueryFilter]:
-    """So'rovni qayta ishlaydi. Return: (javob matni, ishlatilgan filtr)."""
-    def work() -> tuple[str, QueryFilter]:
+async def _process(text: str) -> tuple[str, QueryFilter, bool]:
+    """So'rovni qayta ishlaydi. Return: (javob matni, filtr, natija_bormi).
+    natija_bormi=False bo'lsa tugmalar ko'rsatilmaydi (topilmadi/bo'sh holat)."""
+    def work() -> tuple[str, QueryFilter, bool]:
         phones = sheets.get_phones()
         f = ai.parse_query(text)
         if not phones:
-            return "Baza hozircha bo'sh yoki yuklanmadi. Administrator bilan bog'laning.", f
+            return "Baza hozircha bo'sh yoki yuklanmadi. Administrator bilan bog'laning.", f, False
+        # So'ralgan brend bazada umuman yo'q bo'lsa — aniq "topilmadi".
+        if f.brand and f.brand.lower() not in sheets.known_brands():
+            return ai.NOT_FOUND, f, False
         top, relaxed = recommend(phones, f, limit=5)
+        if not top:
+            return ai.NOT_FOUND, f, False
         reply = ai.format_reply(top, f)
-        if relaxed and top:
+        if relaxed:
             reply += RELAX_NOTE
-        return reply, f
+        if ai.is_dump_request(text):
+            reply += DUMP_NOTE
+        return reply, f, True
 
     return await asyncio.to_thread(work)
 
@@ -82,21 +109,31 @@ async def cmd_reload(message: Message) -> None:
 async def on_text(message: Message) -> None:
     if not message.text:
         return
+    if not _check_rate(message.chat.id):
+        await message.answer(RATE_MSG)
+        return
     await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
     try:
-        reply, f = await _process(message.text)
-        USER_FILTERS[message.chat.id] = f
-        active = f.sort_by or ("price_near" if f.price_target else None)
-        markup = keyboards.results_keyboard(active=active)
+        reply, f, has_results = await _process(message.text)
     except Exception:  # noqa: BLE001
         logger.exception("So'rovni qayta ishlashda xato")
         await message.answer("Kechirasiz, xatolik yuz berdi. Birozdan keyin qayta urinib ko'ring.")
         return
-    await message.answer(reply, reply_markup=markup)
+
+    if not has_results:
+        await message.answer(reply)  # topilmadi — tugmalarsiz
+        return
+
+    USER_FILTERS[message.chat.id] = f
+    active = f.sort_by or ("price_near" if f.price_target else None)
+    await message.answer(reply, reply_markup=keyboards.results_keyboard(active=active))
 
 
 async def on_sort(query: CallbackQuery) -> None:
     """Saralash tugmasi bosilganda: oldingi filtrni saqlab, faqat tartibni o'zgartirish."""
+    if not _check_rate(query.message.chat.id):
+        await query.answer(RATE_MSG, show_alert=True)
+        return
     await query.answer()
     data = query.data or ""
     prefix, _, key = data.partition(":")

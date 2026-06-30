@@ -132,3 +132,8 @@ def refresh() -> int:
     _cache = load_phones()
     _loaded_at = time.time()
     return len(_cache)
+
+
+def known_brands() -> set[str]:
+    """Bazadagi mavjud brendlar to'plami (kichik harfda). 'Topilmadi' tekshiruvi uchun."""
+    return {(p.brand or "").lower() for p in get_phones() if p.brand}

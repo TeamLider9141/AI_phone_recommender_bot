@@ -1,12 +1,22 @@
 """Filtrlash + saralash mantiqi (LLM'siz, sof Python). Gemini faqat niyatni o'qiydi."""
 from __future__ import annotations
 
+import re
 from dataclasses import replace
 
+from config import config
 from models import Phone, QueryFilter
 
 # "X atrofida" so'ralganda narx oralig'i: target ±40%. Bundan uzoq narxlar ko'rsatilmaydi.
 PRICE_BAND = 0.40
+
+
+def _model_tokens(model: str, brand: str | None) -> list[str]:
+    """Model nomidan brend so'zlarini olib tashlab, qolgan alfanumerik tokenlarni qaytaradi.
+    Misol: model='iPhone 15 Pro', brand='iPhone' -> ['15', 'pro']."""
+    toks = re.findall(r"[a-z0-9]+", model.lower())
+    brand_toks = set(re.findall(r"[a-z0-9]+", (brand or "").lower()))
+    return [tk for tk in toks if tk not in brand_toks]
 
 
 def _matches_hard(p: Phone, f: QueryFilter) -> bool:
@@ -14,6 +24,12 @@ def _matches_hard(p: Phone, f: QueryFilter) -> bool:
     if f.brand and (p.brand or "").lower() != f.brand.lower():
         # iPhone uchun "apple"/"iphone" ikkalasini ham qabul qilamiz
         if not (f.brand.lower() in ("iphone", "apple") and (p.brand or "").lower() in ("iphone", "apple")):
+            return False
+    # Model so'ralgan bo'lsa: barcha model tokenlari p.model ichida bo'lishi shart.
+    if f.model:
+        needed = _model_tokens(f.model, f.brand)
+        hay = (p.model or "").lower()
+        if needed and not all(tk in hay for tk in needed):
             return False
     if f.os and (p.os or "").lower() != f.os.lower():
         return False
@@ -125,8 +141,9 @@ def recommend(phones: list[Phone], f: QueryFilter, limit: int = 5) -> tuple[list
     relaxed = False
 
     if not matched:
-        # Yumshatish: narx chegarasini olib tashlab, faqat brend/ram/rang bo'yicha urinish
-        soft = QueryFilter(brand=f.brand, ram_min=f.ram_min, os=f.os, color=f.color,
+        # Yumshatish: narx/spec chegaralarini olib tashlab, lekin BREND va MODELni saqlash.
+        # Shunda yo'q brend/model boshqa telefonga aylanmaydi (bo'sh qaytadi).
+        soft = QueryFilter(brand=f.brand, model=f.model, os=f.os,
                            camera_priority=f.camera_priority, price_sensitive=f.price_sensitive)
         matched = [p for p in phones if _matches_hard(p, soft)]
         relaxed = bool(matched)
@@ -137,4 +154,6 @@ def recommend(phones: list[Phone], f: QueryFilter, limit: int = 5) -> tuple[list
         eff = replace(f, sort_by="price_near")
 
     _sort_phones(matched, eff)
-    return matched[: (f.limit or limit)], relaxed
+    # Abuse cap: foydalanuvchi/Gemini qancha so'rasa ham MAX_RESULTS dan oshmaydi.
+    n = max(1, min(f.limit or limit, config.max_results))
+    return matched[:n], relaxed

@@ -83,6 +83,13 @@ class QueryFilter:
             clean["camera_priority"] = "none"
         if clean.get("sort_by") not in SORT_KEYS:
             clean.pop("sort_by", None)
+        # limit ni abuse cap bilan cheklaymiz (Gemini katta son qaytarsa ham)
+        if "limit" in clean:
+            from config import config
+            try:
+                clean["limit"] = max(1, min(int(clean["limit"]), config.max_results))
+            except (TypeError, ValueError):
+                clean.pop("limit", None)
         return cls(**clean)
 
 
