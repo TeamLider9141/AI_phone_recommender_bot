@@ -33,6 +33,7 @@ class Config:
     max_results: int = 20      # bitta javobда eng ko'pi bilan nechta telefon (abuse cap)
     rate_max: int = 15         # rate_window ichida ruxsat etilgan so'rov soni
     rate_window: int = 60      # rate limit oynasi (soniya)
+    daily_limit: int = 5       # oddiy foydalanuvchi uchun kunlik so'rov limiti (UTC+5)
 
     @property
     def ai_enabled(self) -> bool:
@@ -52,6 +53,7 @@ def load_config() -> Config:
         max_results=int(os.getenv("MAX_RESULTS", "20")),
         rate_max=int(os.getenv("RATE_MAX", "15")),
         rate_window=int(os.getenv("RATE_WINDOW", "60")),
+        daily_limit=int(os.getenv("DAILY_LIMIT", "5")),
     )
     return cfg
 

@@ -22,7 +22,7 @@ ham ishlayveradi.
 
 | Fayl | Vazifasi |
 |------|----------|
-| `main.py` | Telegram bot (start, matn handler, /reload) |
+| `main.py` | Telegram bot (buyruqlar, kunlik limit, matn handlerlari) |
 | `ai.py` | Gemini: so'rovni filtrga aylantirish + javob yozish |
 | `sheets.py` | Google Sheet'dan baza o'qish + cache (CSV fallback) |
 | `recommender.py` | Qattiq filter + yumshoq saralash |
@@ -86,9 +86,21 @@ python smoke_test.py
 ```
 
 ## Buyruqlar
-- `/start` — qo'llanma
+- `/start` — botni boshlash va asosiy tugmalarni ko'rsatish
+- `/help` — qisqa qo'llanma
+- `/clear` — foydalanuvchining oxirgi tavsiya xabarlarini tozalash
 - `/reload` — bazani majburiy yangilash (faqat `ADMIN_IDS`)
+- `/settings` — kunlik limitni tugmalar orqali o'zgartirish (faqat `ADMIN_IDS`)
 - Oddiy matn — telefon tavsiyasi
+
+## Kunlik limit
+
+Admin bo'lmagan har bir foydalanuvchi uchun standart limit `DAILY_LIMIT=5`.
+Hisoblagich UTC+5 bo'yicha yangi kun boshlanganda yangilanadi. Adminlar limitdan
+ozod va ularning menyusida `/settings` tugmasi ko'rinadi.
+
+`/settings` orqali o'zgartirilgan limit bot ishlayotgan vaqt davomida amal qiladi.
+Bot qayta ishga tushganda qiymat `.env` dagi `DAILY_LIMIT` dan qayta olinadi.
 
 ## Narx: "gacha" vs "atrofida"
 - **«5 mln gacha»** — qattiq chegara (`price_max`): 5 mln dan qimmati ko'rsatilmaydi.
