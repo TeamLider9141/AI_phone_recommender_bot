@@ -14,3 +14,53 @@ Tecno,Camon 30,8,256,Oq,50,50,Helio G99,45,5000,Android,3100000
 Honor,X9b,12,256,Yashil,16,108,Snapdragon 6 Gen 1,52,5800,Android,4900000
 Oppo,Reno 11F,8,256,Ko'k,32,64,Dimensity 7050,60,5000,Android,4400000
 Vivo,Y36,8,128,Oltin,16,50,Snapdragon 680,28,5000,Android,2600000
+Samsung,Galaxy S24,8,128,Qora,12,50,Exynos 2400,90,4000,Android,12000000
+Samsung,Galaxy A35,8,128,Ko'k,13,50,Exynos 1380,58,5000,Android,4300000
+Samsung,Galaxy M34,6,128,Yashil,13,50,Exynos 1280,46,6000,Android,3500000
+Samsung,Galaxy Z Flip5,8,256,Binafsha,10,12,Snapdragon 8 Gen 2,96,3700,Android,14900000
+iPhone,15,6,128,Qora,12,48,A16 Bionic,93,3349,iOS,15100000
+iPhone,14,6,128,Oq,12,12,A15 Bionic,84,3279,iOS,11800000
+iPhone,12,4,64,Ko'k,12,12,A14 Bionic,70,2815,iOS,7600000
+Xiaomi,14,12,256,Oq,32,50,Snapdragon 8 Gen 3,97,4610,Android,10900000
+Xiaomi,13T,12,256,Qora,20,50,Dimensity 8200-Ultra,85,5000,Android,6200000
+Xiaomi,Redmi Note 13,6,128,Yashil,16,108,Snapdragon 685,42,5000,Android,2500000
+Xiaomi,Redmi Note 13 Pro+,12,256,Binafsha,16,200,Dimensity 7200 Ultra,74,5000,Android,5200000
+Redmi,13,8,256,Ko'k,13,108,Helio G91-Ultra,36,5030,Android,2200000
+Redmi,A3,3,64,Qora,5,8,Helio G36,18,5000,Android,1100000
+Poco,F6,12,256,Oltin,20,50,Snapdragon 8s Gen 3,88,5000,Android,5900000
+Poco,M6 Pro,8,256,Ko'k,16,64,Helio G99-Ultra,47,5000,Android,2600000
+Realme,12+,8,256,Yashil,16,50,Dimensity 7050,61,5000,Android,3900000
+Realme,12,8,128,Kulrang,32,50,Snapdragon 685,43,5000,Android,2700000
+Realme,C67,6,128,Qora,8,108,Snapdragon 685,34,5000,Android,2000000
+Realme,GT 6T,12,256,Oq,32,50,Snapdragon 7+ Gen 3,86,5500,Android,6400000
+Infinix,Note 40 Pro,8,256,Titan,32,108,Helio G99 Ultimate,55,5000,Android,2900000
+Infinix,GT 20 Pro,12,256,Ko'k,32,108,Dimensity 8200 Ultimate,79,5000,Android,4300000
+Infinix,Hot 40 Pro,8,128,Qora,32,108,Helio G99,44,5000,Android,2200000
+Tecno,Camon 30 Pro,12,256,Oq,50,50,Dimensity 8200,72,5000,Android,4200000
+Tecno,Spark 20 Pro+,8,256,Ko'k,32,108,Helio G99,41,5000,Android,2100000
+Honor,200,12,256,Yashil,50,50,Snapdragon 7 Gen 3,83,5200,Android,6900000
+Honor,Magic6 Lite,8,256,Qora,16,108,Snapdragon 6 Gen 1,57,5300,Android,4100000
+Honor,X7b,8,128,Oltin,8,108,Snapdragon 680,29,6000,Android,2500000
+Oppo,Reno 12,12,256,Ko'k,32,50,Dimensity 7300-Energy,76,5000,Android,5300000
+Oppo,A78,8,256,Yashil,8,50,Snapdragon 680,37,5000,Android,2700000
+Vivo,V30,12,256,Oq,50,50,Snapdragon 7 Gen 3,84,5000,Android,6700000
+Vivo,V29e,8,128,Binafsha,50,64,Snapdragon 695,59,4800,Android,4200000
+Vivo,Y27,6,128,Kulrang,8,50,Helio G85,31,5000,Android,2200000
+OnePlus,12,16,512,Qora,32,50,Snapdragon 8 Gen 3,98,5400,Android,13500000
+OnePlus,Nord 3,16,256,Oq,16,50,Dimensity 9000,81,5000,Android,6100000
+Google,Pixel 8,8,128,Yashil,10,50,Tensor G3,89,4575,Android,9800000
+Google,Pixel 8a,8,128,Oq,13,64,Tensor G3,86,4492,Android,7900000
+Nothing,Phone 2a,12,256,Qora,32,50,Dimensity 7200 Pro,73,5000,Android,3600000
+Motorola,Edge 50 Pro,12,256,Binafsha,50,50,Snapdragon 7 Gen 3,82,4500,Android,6200000
+Motorola,G84,12,256,Ko'k,16,50,Snapdragon 695,54,5000,Android,2600000
+Huawei,Pura 70,12,256,Oq,13,50,Kirin 9010,87,4900,HarmonyOS,11200000
+Huawei,Nova 12i,8,128,Qora,8,108,Snapdragon 680,35,5000,Android,2800000
+Nokia,G42,6,128,Ko'k,8,50,Snapdragon 480+,28,5000,Android,1900000
+Samsung,Galaxy A25,6,128,Oltin,13,50,Exynos 1280,47,5000,Android,3300000
+Samsung,Galaxy S23 FE,8,256,Kulrang,10,50,Exynos 2200,78,4500,Android,7600000
+iPhone,SE 2022,4,64,Qora,7,12,A15 Bionic,68,2018,iOS,6200000
+Xiaomi,14 Ultra,16,512,Qora,32,50,Snapdragon 8 Gen 3,99,5300,Android,15900000
+Xiaomi,Redmi Note 13 4G,8,256,Oq,16,108,Snapdragon 685,40,5000,Android,2800000
+Realme,Narzo 70 Pro,8,128,Yashil,16,50,Dimensity 7050,49,5000,Android,3100000
+Tecno,Pova 6 Pro,12,256,Titan,32,108,Helio G99 Ultimate,52,6000,Android,3200000
+Infinix,Zero 30,8,256,Binafsha,50,108,Dimensity 8020,66,5000,Android,4700000
