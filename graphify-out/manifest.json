@@ -1,0 +1,42 @@
+{
+  "/home/eaduinte/Desktop/phone_rec/sheets.py": {
+    "mtime": 1782826383.5883949,
+    "hash": "a5d299fca15c9607ba766e57bc33cfa4"
+  },
+  "/home/eaduinte/Desktop/phone_rec/models.py": {
+    "mtime": 1782826367.6280735,
+    "hash": "c6a1bb9914dd0b648483370fc62920db"
+  },
+  "/home/eaduinte/Desktop/phone_rec/recommender.py": {
+    "mtime": 1782826429.5675635,
+    "hash": "55452597d762d0edddae9e697fc72e79"
+  },
+  "/home/eaduinte/Desktop/phone_rec/ai.py": {
+    "mtime": 1782826113.9219244,
+    "hash": "67d240cecf65789c0718a05c727709e4"
+  },
+  "/home/eaduinte/Desktop/phone_rec/smoke_test.py": {
+    "mtime": 1782826467.6730587,
+    "hash": "d873da5b3d12de2e2b366f9e0d69834c"
+  },
+  "/home/eaduinte/Desktop/phone_rec/main.py": {
+    "mtime": 1782826124.2781835,
+    "hash": "ef53559fb0249ca582bc46104e580053"
+  },
+  "/home/eaduinte/Desktop/phone_rec/keyboards.py": {
+    "mtime": 1782825387.7521868,
+    "hash": "818040c682ff19bb2fa377964d8bc88a"
+  },
+  "/home/eaduinte/Desktop/phone_rec/config.py": {
+    "mtime": 1782824038.7419822,
+    "hash": "4541331609aded78da2c088b4367f0aa"
+  },
+  "/home/eaduinte/Desktop/phone_rec/requirements.txt": {
+    "mtime": 1782824212.7114885,
+    "hash": "6a0380041e15410ece683a0fa5104bc5"
+  },
+  "/home/eaduinte/Desktop/phone_rec/README.md": {
+    "mtime": 1782826591.934537,
+    "hash": "d9437b7f6b27c4208cfa491f2296dba7"
+  }
+}

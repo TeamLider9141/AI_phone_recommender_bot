@@ -1,0 +1,2168 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "sheets.py",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L1",
+      "id": "sheets_py",
+      "community": 1,
+      "norm_label": "sheets.py"
+    },
+    {
+      "label": "_norm_key()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L42",
+      "id": "phone_rec_sheets_norm_key",
+      "community": 1,
+      "norm_label": "_norm_key()"
+    },
+    {
+      "label": "_to_int()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L46",
+      "id": "phone_rec_sheets_to_int",
+      "community": 1,
+      "norm_label": "_to_int()"
+    },
+    {
+      "label": "_row_to_phone()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L56",
+      "id": "phone_rec_sheets_row_to_phone",
+      "community": 1,
+      "norm_label": "_row_to_phone()"
+    },
+    {
+      "label": "_load_from_sheet()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L70",
+      "id": "phone_rec_sheets_load_from_sheet",
+      "community": 1,
+      "norm_label": "_load_from_sheet()"
+    },
+    {
+      "label": "_load_from_csv()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L82",
+      "id": "phone_rec_sheets_load_from_csv",
+      "community": 1,
+      "norm_label": "_load_from_csv()"
+    },
+    {
+      "label": "load_phones()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L90",
+      "id": "phone_rec_sheets_load_phones",
+      "community": 1,
+      "norm_label": "load_phones()"
+    },
+    {
+      "label": "get_phones()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L105",
+      "id": "phone_rec_sheets_get_phones",
+      "community": 1,
+      "norm_label": "get_phones()"
+    },
+    {
+      "label": "refresh()",
+      "file_type": "code",
+      "source_file": "sheets.py",
+      "source_location": "L114",
+      "id": "phone_rec_sheets_refresh",
+      "community": 1,
+      "norm_label": "refresh()"
+    },
+    {
+      "label": "Google Sheet (live) dan telefonlar bazasini o'qish + RAM cache (TTL).  Agar Goog",
+      "file_type": "rationale",
+      "source_file": "sheets.py",
+      "source_location": "L1",
+      "id": "phone_rec_sheets_rationale_1",
+      "community": 1,
+      "norm_label": "google sheet (live) dan telefonlar bazasini o'qish + ram cache (ttl).  agar goog"
+    },
+    {
+      "label": "8 GB', '5,000,000', '5000mAh' -> int; bo'sh/xato -> None.",
+      "file_type": "rationale",
+      "source_file": "sheets.py",
+      "source_location": "L47",
+      "id": "phone_rec_sheets_rationale_47",
+      "community": 1,
+      "norm_label": "8 gb', '5,000,000', '5000mah' -> int; bo'sh/xato -> none."
+    },
+    {
+      "label": "Manbadan telefonlar ro'yxatini yuklaydi (cachesiz, to'g'ridan-to'g'ri).",
+      "file_type": "rationale",
+      "source_file": "sheets.py",
+      "source_location": "L91",
+      "id": "phone_rec_sheets_rationale_91",
+      "community": 1,
+      "norm_label": "manbadan telefonlar ro'yxatini yuklaydi (cachesiz, to'g'ridan-to'g'ri)."
+    },
+    {
+      "label": "Cache'langan ro'yxat; TTL o'tgan bo'lsa qayta yuklaydi.",
+      "file_type": "rationale",
+      "source_file": "sheets.py",
+      "source_location": "L106",
+      "id": "phone_rec_sheets_rationale_106",
+      "community": 1,
+      "norm_label": "cache'langan ro'yxat; ttl o'tgan bo'lsa qayta yuklaydi."
+    },
+    {
+      "label": "Majburiy qayta yuklash (admin /reload). Yuklangan telefonlar sonini qaytaradi.",
+      "file_type": "rationale",
+      "source_file": "sheets.py",
+      "source_location": "L115",
+      "id": "phone_rec_sheets_rationale_115",
+      "community": 1,
+      "norm_label": "majburiy qayta yuklash (admin /reload). yuklangan telefonlar sonini qaytaradi."
+    },
+    {
+      "label": "models.py",
+      "file_type": "code",
+      "source_file": "models.py",
+      "source_location": "L1",
+      "id": "models_py",
+      "community": 6,
+      "norm_label": "models.py"
+    },
+    {
+      "label": "Phone",
+      "file_type": "code",
+      "source_file": "models.py",
+      "source_location": "L9",
+      "id": "phone_rec_models_phone",
+      "community": 6,
+      "norm_label": "phone"
+    },
+    {
+      "label": ".title()",
+      "file_type": "code",
+      "source_file": "models.py",
+      "source_location": "L24",
+      "id": "phone_rec_models_phone_title",
+      "community": 6,
+      "norm_label": ".title()"
+    },
+    {
+      "label": ".short_spec()",
+      "file_type": "code",
+      "source_file": "models.py",
+      "source_location": "L28",
+      "id": "phone_rec_models_phone_short_spec",
+      "community": 6,
+      "norm_label": ".short_spec()"
+    },
+    {
+      "label": "QueryFilter",
+      "file_type": "code",
+      "source_file": "models.py",
+      "source_location": "L53",
+      "id": "phone_rec_models_queryfilter",
+      "community": 6,
+      "norm_label": "queryfilter"
+    },
+    {
+      "label": "from_dict()",
+      "file_type": "code",
+      "source_file": "models.py",
+      "source_location": "L72",
+      "id": "phone_rec_models_from_dict",
+      "community": 6,
+      "norm_label": "from_dict()"
+    },
+    {
+      "label": "Ma'lumot strukturalari: Phone (bazadagi bitta telefon) va QueryFilter (so'rov fi",
+      "file_type": "rationale",
+      "source_file": "models.py",
+      "source_location": "L1",
+      "id": "phone_rec_models_rationale_1",
+      "community": 6,
+      "norm_label": "ma'lumot strukturalari: phone (bazadagi bitta telefon) va queryfilter (so'rov fi"
+    },
+    {
+      "label": "Bazadagi (Google Sheet) bitta telefon yozuvi.",
+      "file_type": "rationale",
+      "source_file": "models.py",
+      "source_location": "L10",
+      "id": "phone_rec_models_rationale_10",
+      "community": 6,
+      "norm_label": "bazadagi (google sheet) bitta telefon yozuvi."
+    },
+    {
+      "label": "Telegram javobi uchun qisqa, o'qiladigan spetsifikatsiya satri.",
+      "file_type": "rationale",
+      "source_file": "models.py",
+      "source_location": "L29",
+      "id": "phone_rec_models_rationale_29",
+      "community": 6,
+      "norm_label": "telegram javobi uchun qisqa, o'qiladigan spetsifikatsiya satri."
+    },
+    {
+      "label": "Gemini foydalanuvchi matnidan ajratib oladigan strukturali filtr.",
+      "file_type": "rationale",
+      "source_file": "models.py",
+      "source_location": "L54",
+      "id": "phone_rec_models_rationale_54",
+      "community": 6,
+      "norm_label": "gemini foydalanuvchi matnidan ajratib oladigan strukturali filtr."
+    },
+    {
+      "label": "Gemini qaytargan JSON dict dan xavfsiz qurish (begona kalitlarni tashlab).",
+      "file_type": "rationale",
+      "source_file": "models.py",
+      "source_location": "L73",
+      "id": "phone_rec_models_rationale_73",
+      "community": 9,
+      "norm_label": "gemini qaytargan json dict dan xavfsiz qurish (begona kalitlarni tashlab)."
+    },
+    {
+      "label": "recommender.py",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L1",
+      "id": "recommender_py",
+      "community": 0,
+      "norm_label": "recommender.py"
+    },
+    {
+      "label": "_matches_hard()",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L12",
+      "id": "phone_rec_recommender_matches_hard",
+      "community": 0,
+      "norm_label": "_matches_hard()"
+    },
+    {
+      "label": "_processor_score()",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L65",
+      "id": "phone_rec_recommender_processor_score",
+      "community": 0,
+      "norm_label": "_processor_score()"
+    },
+    {
+      "label": "_proc_value()",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L77",
+      "id": "phone_rec_recommender_proc_value",
+      "community": 0,
+      "norm_label": "_proc_value()"
+    },
+    {
+      "label": "_sort_phones()",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L84",
+      "id": "phone_rec_recommender_sort_phones",
+      "community": 0,
+      "norm_label": "_sort_phones()"
+    },
+    {
+      "label": "_score()",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L105",
+      "id": "phone_rec_recommender_score",
+      "community": 0,
+      "norm_label": "_score()"
+    },
+    {
+      "label": "recommend()",
+      "file_type": "code",
+      "source_file": "recommender.py",
+      "source_location": "L118",
+      "id": "phone_rec_recommender_recommend",
+      "community": 0,
+      "norm_label": "recommend()"
+    },
+    {
+      "label": "Filtrlash + saralash mantiqi (LLM'siz, sof Python). Gemini faqat niyatni o'qiydi",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L1",
+      "id": "phone_rec_recommender_rationale_1",
+      "community": 0,
+      "norm_label": "filtrlash + saralash mantiqi (llm'siz, sof python). gemini faqat niyatni o'qiydi"
+    },
+    {
+      "label": "Qattiq shartlar: biror shart buzilsa telefon tushib qoladi.",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L13",
+      "id": "phone_rec_recommender_rationale_13",
+      "community": 0,
+      "norm_label": "qattiq shartlar: biror shart buzilsa telefon tushib qoladi."
+    },
+    {
+      "label": "Chipset nomidan taxminiy quvvat bali (heuristik). Topilmasa 0.",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L66",
+      "id": "phone_rec_recommender_rationale_66",
+      "community": 0,
+      "norm_label": "chipset nomidan taxminiy quvvat bali (heuristik). topilmasa 0."
+    },
+    {
+      "label": "Protsessor bali: Sheet'dagi proc_tier ustun bo'lsa shuni, aks holda nomdan taxmi",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L78",
+      "id": "phone_rec_recommender_rationale_78",
+      "community": 0,
+      "norm_label": "protsessor bali: sheet'dagi proc_tier ustun bo'lsa shuni, aks holda nomdan taxmi"
+    },
+    {
+      "label": "matched ro'yxatini f.sort_by bo'yicha joyida saralaydi.",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L85",
+      "id": "phone_rec_recommender_rationale_85",
+      "community": 0,
+      "norm_label": "matched ro'yxatini f.sort_by bo'yicha joyida saralaydi."
+    },
+    {
+      "label": "Yumshoq saralash bali \u2014 kattaroq = yaxshiroq mos.",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L106",
+      "id": "phone_rec_recommender_rationale_106",
+      "community": 0,
+      "norm_label": "yumshoq saralash bali \u2014 kattaroq = yaxshiroq mos."
+    },
+    {
+      "label": "Mos telefonlarni qaytaradi.      Return: (telefonlar, relaxed) \u2014 relaxed=True bo",
+      "file_type": "rationale",
+      "source_file": "recommender.py",
+      "source_location": "L119",
+      "id": "phone_rec_recommender_rationale_119",
+      "community": 0,
+      "norm_label": "mos telefonlarni qaytaradi.      return: (telefonlar, relaxed) \u2014 relaxed=true bo"
+    },
+    {
+      "label": "ai.py",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L1",
+      "id": "ai_py",
+      "community": 2,
+      "norm_label": "ai.py"
+    },
+    {
+      "label": "_get_model()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L29",
+      "id": "phone_rec_ai_get_model",
+      "community": 2,
+      "norm_label": "_get_model()"
+    },
+    {
+      "label": "parse_query()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L44",
+      "id": "phone_rec_ai_parse_query",
+      "community": 2,
+      "norm_label": "parse_query()"
+    },
+    {
+      "label": "_fallback_parse()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L70",
+      "id": "phone_rec_ai_fallback_parse",
+      "community": 2,
+      "norm_label": "_fallback_parse()"
+    },
+    {
+      "label": "_parse_price()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L130",
+      "id": "phone_rec_ai_parse_price",
+      "community": 2,
+      "norm_label": "_parse_price()"
+    },
+    {
+      "label": "format_reply()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L153",
+      "id": "phone_rec_ai_format_reply",
+      "community": 2,
+      "norm_label": "format_reply()"
+    },
+    {
+      "label": "_phone_dict()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L181",
+      "id": "phone_rec_ai_phone_dict",
+      "community": 2,
+      "norm_label": "_phone_dict()"
+    },
+    {
+      "label": "simple_reply()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L189",
+      "id": "phone_rec_ai_simple_reply",
+      "community": 2,
+      "norm_label": "simple_reply()"
+    },
+    {
+      "label": "_template_reply()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L196",
+      "id": "phone_rec_ai_template_reply",
+      "community": 2,
+      "norm_label": "_template_reply()"
+    },
+    {
+      "label": "_empty_reply()",
+      "file_type": "code",
+      "source_file": "ai.py",
+      "source_location": "L203",
+      "id": "phone_rec_ai_empty_reply",
+      "community": 2,
+      "norm_label": "_empty_reply()"
+    },
+    {
+      "label": "Gemini (tekin) bilan ishlash: foydalanuvchi matnini filtrga aylantirish va javob",
+      "file_type": "rationale",
+      "source_file": "ai.py",
+      "source_location": "L1",
+      "id": "phone_rec_ai_rationale_1",
+      "community": 2,
+      "norm_label": "gemini (tekin) bilan ishlash: foydalanuvchi matnini filtrga aylantirish va javob"
+    },
+    {
+      "label": "Tabiiy til so'rovini QueryFilter ga aylantiradi (Gemini, fallback regex).",
+      "file_type": "rationale",
+      "source_file": "ai.py",
+      "source_location": "L45",
+      "id": "phone_rec_ai_rationale_45",
+      "community": 2,
+      "norm_label": "tabiiy til so'rovini queryfilter ga aylantiradi (gemini, fallback regex)."
+    },
+    {
+      "label": "Top telefonlardan o'zbekcha tavsiya matni (Gemini, fallback shablon).",
+      "file_type": "rationale",
+      "source_file": "ai.py",
+      "source_location": "L154",
+      "id": "phone_rec_ai_rationale_154",
+      "community": 2,
+      "norm_label": "top telefonlardan o'zbekcha tavsiya matni (gemini, fallback shablon)."
+    },
+    {
+      "label": "Gemini'siz, tez shablon javob \u2014 tugma (qayta saralash) bosilganda ishlatiladi.",
+      "file_type": "rationale",
+      "source_file": "ai.py",
+      "source_location": "L190",
+      "id": "phone_rec_ai_rationale_190",
+      "community": 2,
+      "norm_label": "gemini'siz, tez shablon javob \u2014 tugma (qayta saralash) bosilganda ishlatiladi."
+    },
+    {
+      "label": "smoke_test.py",
+      "file_type": "code",
+      "source_file": "smoke_test.py",
+      "source_location": "L1",
+      "id": "smoke_test_py",
+      "community": 0,
+      "norm_label": "smoke_test.py"
+    },
+    {
+      "label": "section()",
+      "file_type": "code",
+      "source_file": "smoke_test.py",
+      "source_location": "L12",
+      "id": "phone_rec_smoke_test_section",
+      "community": 0,
+      "norm_label": "section()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "smoke_test.py",
+      "source_location": "L16",
+      "id": "phone_rec_smoke_test_main",
+      "community": 0,
+      "norm_label": "main()"
+    },
+    {
+      "label": "Kalitlarsiz, offline tekshiruv: CSV yuklash + regex parse + saralash + shablon j",
+      "file_type": "rationale",
+      "source_file": "smoke_test.py",
+      "source_location": "L1",
+      "id": "phone_rec_smoke_test_rationale_1",
+      "community": 0,
+      "norm_label": "kalitlarsiz, offline tekshiruv: csv yuklash + regex parse + saralash + shablon j"
+    },
+    {
+      "label": "main.py",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L1",
+      "id": "main_py",
+      "community": 3,
+      "norm_label": "main.py"
+    },
+    {
+      "label": "_process()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L40",
+      "id": "phone_rec_main_process",
+      "community": 3,
+      "norm_label": "_process()"
+    },
+    {
+      "label": "_resort()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L56",
+      "id": "phone_rec_main_resort",
+      "community": 3,
+      "norm_label": "_resort()"
+    },
+    {
+      "label": "cmd_start()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L70",
+      "id": "phone_rec_main_cmd_start",
+      "community": 3,
+      "norm_label": "cmd_start()"
+    },
+    {
+      "label": "cmd_reload()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L74",
+      "id": "phone_rec_main_cmd_reload",
+      "community": 3,
+      "norm_label": "cmd_reload()"
+    },
+    {
+      "label": "on_text()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L82",
+      "id": "phone_rec_main_on_text",
+      "community": 3,
+      "norm_label": "on_text()"
+    },
+    {
+      "label": "on_sort()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L98",
+      "id": "phone_rec_main_on_sort",
+      "community": 3,
+      "norm_label": "on_sort()"
+    },
+    {
+      "label": "build_dispatcher()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L119",
+      "id": "phone_rec_main_build_dispatcher",
+      "community": 3,
+      "norm_label": "build_dispatcher()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L128",
+      "id": "phone_rec_main_main",
+      "community": 3,
+      "norm_label": "main()"
+    },
+    {
+      "label": "Telegram bot entrypoint (aiogram 3.x). Telefon tavsiya qiluvchi AI bot.",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L1",
+      "id": "phone_rec_main_rationale_1",
+      "community": 3,
+      "norm_label": "telegram bot entrypoint (aiogram 3.x). telefon tavsiya qiluvchi ai bot."
+    },
+    {
+      "label": "So'rovni qayta ishlaydi. Return: (javob matni, ishlatilgan filtr).",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L41",
+      "id": "phone_rec_main_rationale_41",
+      "community": 3,
+      "norm_label": "so'rovni qayta ishlaydi. return: (javob matni, ishlatilgan filtr)."
+    },
+    {
+      "label": "Tugma bosilganda: saqlangan filtrni qayta saralash (tez, Gemini'siz).",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L57",
+      "id": "phone_rec_main_rationale_57",
+      "community": 3,
+      "norm_label": "tugma bosilganda: saqlangan filtrni qayta saralash (tez, gemini'siz)."
+    },
+    {
+      "label": "Saralash tugmasi bosilganda: oldingi filtrni saqlab, faqat tartibni o'zgartirish",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L99",
+      "id": "phone_rec_main_rationale_99",
+      "community": 3,
+      "norm_label": "saralash tugmasi bosilganda: oldingi filtrni saqlab, faqat tartibni o'zgartirish"
+    },
+    {
+      "label": "keyboards.py",
+      "file_type": "code",
+      "source_file": "keyboards.py",
+      "source_location": "L1",
+      "id": "keyboards_py",
+      "community": 8,
+      "norm_label": "keyboards.py"
+    },
+    {
+      "label": "results_keyboard()",
+      "file_type": "code",
+      "source_file": "keyboards.py",
+      "source_location": "L10",
+      "id": "phone_rec_keyboards_results_keyboard",
+      "community": 8,
+      "norm_label": "results_keyboard()"
+    },
+    {
+      "label": "Inline tugmalar: natijalarni qayta saralash filtrlari.",
+      "file_type": "rationale",
+      "source_file": "keyboards.py",
+      "source_location": "L1",
+      "id": "phone_rec_keyboards_rationale_1",
+      "community": 8,
+      "norm_label": "inline tugmalar: natijalarni qayta saralash filtrlari."
+    },
+    {
+      "label": "So'rov natijasi ostidagi saralash tugmalari. active = belgilangan kalit.",
+      "file_type": "rationale",
+      "source_file": "keyboards.py",
+      "source_location": "L11",
+      "id": "phone_rec_keyboards_rationale_11",
+      "community": 8,
+      "norm_label": "so'rov natijasi ostidagi saralash tugmalari. active = belgilangan kalit."
+    },
+    {
+      "label": "config.py",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "L1",
+      "id": "config_py",
+      "community": 7,
+      "norm_label": "config.py"
+    },
+    {
+      "label": "_int_list()",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "L12",
+      "id": "phone_rec_config_int_list",
+      "community": 7,
+      "norm_label": "_int_list()"
+    },
+    {
+      "label": "Config",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "L24",
+      "id": "phone_rec_config_config",
+      "community": 7,
+      "norm_label": "config"
+    },
+    {
+      "label": "ai_enabled()",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "L35",
+      "id": "phone_rec_config_ai_enabled",
+      "community": 7,
+      "norm_label": "ai_enabled()"
+    },
+    {
+      "label": "load_config()",
+      "file_type": "code",
+      "source_file": "config.py",
+      "source_location": "L39",
+      "id": "phone_rec_config_load_config",
+      "community": 7,
+      "norm_label": "load_config()"
+    },
+    {
+      "label": "Konfiguratsiya: .env fayldan token/kalit/sozlamalarni o'qiydi.",
+      "file_type": "rationale",
+      "source_file": "config.py",
+      "source_location": "L1",
+      "id": "phone_rec_config_rationale_1",
+      "community": 7,
+      "norm_label": "konfiguratsiya: .env fayldan token/kalit/sozlamalarni o'qiydi."
+    },
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "id": "readme_md",
+      "community": 4,
+      "norm_label": "readme.md"
+    },
+    {
+      "label": "\ud83d\udcf1 Telefon tavsiya qiluvchi AI Telegram bot (MVP)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "id": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "community": 4,
+      "norm_label": "\ud83d\udcf1 telefon tavsiya qiluvchi ai telegram bot (mvp)"
+    },
+    {
+      "label": "Qanday ishlaydi",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L9",
+      "id": "phone_rec_readme_qanday_ishlaydi",
+      "community": 4,
+      "norm_label": "qanday ishlaydi"
+    },
+    {
+      "label": "code:block1 (Foydalanuvchi matni \u2192 Gemini (niyatni JSON filtrga aylantira)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L11",
+      "id": "phone_rec_readme_codeblock_1",
+      "community": 4,
+      "norm_label": "code:block1 (foydalanuvchi matni \u2192 gemini (niyatni json filtrga aylantira)"
+    },
+    {
+      "label": "Fayllar",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L21",
+      "id": "phone_rec_readme_fayllar",
+      "community": 4,
+      "norm_label": "fayllar"
+    },
+    {
+      "label": "Sozlash",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L33",
+      "id": "phone_rec_readme_sozlash",
+      "community": 5,
+      "norm_label": "sozlash"
+    },
+    {
+      "label": "1. Kutubxonalar",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L35",
+      "id": "phone_rec_readme_1_kutubxonalar",
+      "community": 5,
+      "norm_label": "1. kutubxonalar"
+    },
+    {
+      "label": "code:bash (cd phone_rec)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L36",
+      "id": "phone_rec_readme_codeblock_2",
+      "community": 5,
+      "norm_label": "code:bash (cd phone_rec)"
+    },
+    {
+      "label": "2. Telegram token",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L42",
+      "id": "phone_rec_readme_2_telegram_token",
+      "community": 5,
+      "norm_label": "2. telegram token"
+    },
+    {
+      "label": "3. Gemini API key (tekin)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L45",
+      "id": "phone_rec_readme_3_gemini_api_key_tekin",
+      "community": 5,
+      "norm_label": "3. gemini api key (tekin)"
+    },
+    {
+      "label": "4. Google Sheets (live baza)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L48",
+      "id": "phone_rec_readme_4_google_sheets_live_baza",
+      "community": 5,
+      "norm_label": "4. google sheets (live baza)"
+    },
+    {
+      "label": "code:block3 (brand | model | ram | storage | color | camera_front | camer)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L57",
+      "id": "phone_rec_readme_codeblock_3",
+      "community": 5,
+      "norm_label": "code:block3 (brand | model | ram | storage | color | camera_front | camer)"
+    },
+    {
+      "label": "5. `.env`",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L65",
+      "id": "phone_rec_readme_5_env",
+      "community": 5,
+      "norm_label": "5. `.env`"
+    },
+    {
+      "label": "code:bash (cp .env.example .env)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L66",
+      "id": "phone_rec_readme_codeblock_4",
+      "community": 5,
+      "norm_label": "code:bash (cp .env.example .env)"
+    },
+    {
+      "label": "6. Ishga tushirish",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L71",
+      "id": "phone_rec_readme_6_ishga_tushirish",
+      "community": 5,
+      "norm_label": "6. ishga tushirish"
+    },
+    {
+      "label": "code:bash (python main.py)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L72",
+      "id": "phone_rec_readme_codeblock_5",
+      "community": 5,
+      "norm_label": "code:bash (python main.py)"
+    },
+    {
+      "label": "Sinash (kalitlarsiz, offline)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L76",
+      "id": "phone_rec_readme_sinash_kalitlarsiz_offline",
+      "community": 4,
+      "norm_label": "sinash (kalitlarsiz, offline)"
+    },
+    {
+      "label": "code:bash (python smoke_test.py)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L80",
+      "id": "phone_rec_readme_codeblock_6",
+      "community": 4,
+      "norm_label": "code:bash (python smoke_test.py)"
+    },
+    {
+      "label": "Buyruqlar",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L84",
+      "id": "phone_rec_readme_buyruqlar",
+      "community": 4,
+      "norm_label": "buyruqlar"
+    },
+    {
+      "label": "Narx: \"gacha\" vs \"atrofida\"",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L89",
+      "id": "phone_rec_readme_narx_gacha_vs_atrofida",
+      "community": 4,
+      "norm_label": "narx: \"gacha\" vs \"atrofida\""
+    },
+    {
+      "label": "Filtr tugmalari (inline)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L96",
+      "id": "phone_rec_readme_filtr_tugmalari_inline",
+      "community": 4,
+      "norm_label": "filtr tugmalari (inline)"
+    },
+    {
+      "label": "Keyingi bosqich (production)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L109",
+      "id": "phone_rec_readme_keyingi_bosqich_production",
+      "community": 4,
+      "norm_label": "keyingi bosqich (production)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_norm_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_to_int",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_row_to_phone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_load_from_sheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_load_from_csv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_load_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_get_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "sheets_py",
+      "target": "phone_rec_sheets_refresh",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_rationale_1",
+      "target": "sheets_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_row_to_phone",
+      "target": "phone_rec_sheets_norm_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_row_to_phone",
+      "target": "phone_rec_sheets_to_int",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_rationale_47",
+      "target": "phone_rec_sheets_to_int",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_load_from_sheet",
+      "target": "phone_rec_sheets_row_to_phone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_load_from_csv",
+      "target": "phone_rec_sheets_row_to_phone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "sheets.py",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_row_to_phone",
+      "target": "phone_rec_models_phone"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_load_phones",
+      "target": "phone_rec_sheets_load_from_sheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_load_phones",
+      "target": "phone_rec_sheets_load_from_csv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_get_phones",
+      "target": "phone_rec_sheets_load_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_refresh",
+      "target": "phone_rec_sheets_load_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_rationale_91",
+      "target": "phone_rec_sheets_load_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_rationale_106",
+      "target": "phone_rec_sheets_get_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sheets.py",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "phone_rec_sheets_rationale_115",
+      "target": "phone_rec_sheets_refresh",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "models_py",
+      "target": "phone_rec_models_phone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "models_py",
+      "target": "phone_rec_models_queryfilter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "models_py",
+      "target": "phone_rec_models_from_dict",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_models_rationale_1",
+      "target": "models_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "phone_rec_models_phone",
+      "target": "phone_rec_models_phone_title",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "phone_rec_models_phone",
+      "target": "phone_rec_models_phone_short_spec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "phone_rec_models_rationale_10",
+      "target": "phone_rec_models_phone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "phone_rec_models_rationale_29",
+      "target": "phone_rec_models_phone_short_spec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "models.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "phone_rec_models_rationale_54",
+      "target": "phone_rec_models_queryfilter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "recommender.py",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_recommend",
+      "target": "phone_rec_models_queryfilter"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "ai.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "phone_rec_ai_fallback_parse",
+      "target": "phone_rec_models_queryfilter"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "recommender_py",
+      "target": "phone_rec_recommender_matches_hard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "recommender_py",
+      "target": "phone_rec_recommender_processor_score",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "recommender_py",
+      "target": "phone_rec_recommender_proc_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "recommender_py",
+      "target": "phone_rec_recommender_sort_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "recommender_py",
+      "target": "phone_rec_recommender_score",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "recommender_py",
+      "target": "phone_rec_recommender_recommend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_1",
+      "target": "recommender_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_recommend",
+      "target": "phone_rec_recommender_matches_hard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_13",
+      "target": "phone_rec_recommender_matches_hard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_proc_value",
+      "target": "phone_rec_recommender_processor_score",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_66",
+      "target": "phone_rec_recommender_processor_score",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L78",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_78",
+      "target": "phone_rec_recommender_proc_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L102",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_sort_phones",
+      "target": "phone_rec_recommender_score",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_recommend",
+      "target": "phone_rec_recommender_sort_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L85",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_85",
+      "target": "phone_rec_recommender_sort_phones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_106",
+      "target": "phone_rec_recommender_score",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "recommender.py",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "phone_rec_recommender_rationale_119",
+      "target": "phone_rec_recommender_recommend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "smoke_test.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "phone_rec_smoke_test_main",
+      "target": "phone_rec_recommender_recommend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_get_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_parse_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_fallback_parse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L130",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_parse_price",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_format_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_phone_dict",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L189",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_simple_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L196",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_template_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "ai_py",
+      "target": "phone_rec_ai_empty_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_ai_rationale_1",
+      "target": "ai_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "phone_rec_ai_parse_query",
+      "target": "phone_rec_ai_get_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "phone_rec_ai_parse_query",
+      "target": "phone_rec_ai_fallback_parse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "phone_rec_ai_rationale_45",
+      "target": "phone_rec_ai_parse_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "phone_rec_ai_fallback_parse",
+      "target": "phone_rec_ai_parse_price",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L156",
+      "weight": 1.0,
+      "source": "phone_rec_ai_format_reply",
+      "target": "phone_rec_ai_empty_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L166",
+      "weight": 1.0,
+      "source": "phone_rec_ai_format_reply",
+      "target": "phone_rec_ai_phone_dict",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L178",
+      "weight": 1.0,
+      "source": "phone_rec_ai_format_reply",
+      "target": "phone_rec_ai_template_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "phone_rec_ai_rationale_154",
+      "target": "phone_rec_ai_format_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L193",
+      "weight": 1.0,
+      "source": "phone_rec_ai_simple_reply",
+      "target": "phone_rec_ai_template_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ai.py",
+      "source_location": "L190",
+      "weight": 1.0,
+      "source": "phone_rec_ai_rationale_190",
+      "target": "phone_rec_ai_simple_reply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "smoke_test.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "smoke_test_py",
+      "target": "phone_rec_smoke_test_section",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "smoke_test.py",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "smoke_test_py",
+      "target": "phone_rec_smoke_test_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "smoke_test.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_smoke_test_rationale_1",
+      "target": "smoke_test_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "smoke_test.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "phone_rec_smoke_test_main",
+      "target": "phone_rec_smoke_test_section",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_process",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_resort",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_cmd_start",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_cmd_reload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_on_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L98",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_on_sort",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_build_dispatcher",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "main_py",
+      "target": "phone_rec_main_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_main_rationale_1",
+      "target": "main_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "phone_rec_main_on_text",
+      "target": "phone_rec_main_process",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "phone_rec_main_rationale_41",
+      "target": "phone_rec_main_process",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "phone_rec_main_on_sort",
+      "target": "phone_rec_main_resort",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "phone_rec_main_rationale_57",
+      "target": "phone_rec_main_resort",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "phone_rec_main_rationale_99",
+      "target": "phone_rec_main_on_sort",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "phone_rec_main_main",
+      "target": "phone_rec_main_build_dispatcher",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "keyboards.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "keyboards_py",
+      "target": "phone_rec_keyboards_results_keyboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "keyboards.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_keyboards_rationale_1",
+      "target": "keyboards_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "keyboards.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "phone_rec_keyboards_rationale_11",
+      "target": "phone_rec_keyboards_results_keyboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "config_py",
+      "target": "phone_rec_config_int_list",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "config_py",
+      "target": "phone_rec_config_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "config_py",
+      "target": "phone_rec_config_ai_enabled",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "config_py",
+      "target": "phone_rec_config_load_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "phone_rec_config_rationale_1",
+      "target": "config_py",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "phone_rec_config_load_config",
+      "target": "phone_rec_config_int_list",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "config.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "phone_rec_config_load_config",
+      "target": "phone_rec_config_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "readme_md",
+      "target": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_qanday_ishlaydi",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_fayllar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_sozlash",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_sinash_kalitlarsiz_offline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_buyruqlar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_narx_gacha_vs_atrofida",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_filtr_tugmalari_inline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "phone_rec_readme_telefon_tavsiya_qiluvchi_ai_telegram_bot_mvp",
+      "target": "phone_rec_readme_keyingi_bosqich_production",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "phone_rec_readme_qanday_ishlaydi",
+      "target": "phone_rec_readme_codeblock_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sozlash",
+      "target": "phone_rec_readme_1_kutubxonalar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sozlash",
+      "target": "phone_rec_readme_2_telegram_token",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sozlash",
+      "target": "phone_rec_readme_3_gemini_api_key_tekin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sozlash",
+      "target": "phone_rec_readme_4_google_sheets_live_baza",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sozlash",
+      "target": "phone_rec_readme_5_env",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sozlash",
+      "target": "phone_rec_readme_6_ishga_tushirish",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "phone_rec_readme_1_kutubxonalar",
+      "target": "phone_rec_readme_codeblock_2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "phone_rec_readme_4_google_sheets_live_baza",
+      "target": "phone_rec_readme_codeblock_3",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "phone_rec_readme_5_env",
+      "target": "phone_rec_readme_codeblock_4",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "phone_rec_readme_6_ishga_tushirish",
+      "target": "phone_rec_readme_codeblock_5",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "phone_rec_readme_sinash_kalitlarsiz_offline",
+      "target": "phone_rec_readme_codeblock_6",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "79e87c7cea894a5fe54e81f9d647e53a6284d23a"
+}
