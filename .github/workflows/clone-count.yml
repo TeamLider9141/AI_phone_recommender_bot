@@ -1,0 +1,68 @@
+name: Klon statistikasini yangilash
+
+on:
+  schedule:
+    - cron: "0 3 * * *"  # har kuni UTC 03:00 (Toshkent vaqti bilan 08:00)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-clone-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo'ni checkout qilish
+        uses: actions/checkout@v4
+
+      - name: Traffic API'dan klon sonini olib, umumiy hisobga qo'shish
+        env:
+          GH_TOKEN: ${{ secrets.TRAFFIC_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          BADGE_FILE=".github/badges/clone-count.json"
+          STATE_FILE=".github/badges/clone-state.json"
+
+          if [ -f "$STATE_FILE" ]; then
+            LAST_DATE=$(jq -r '.lastDate // "1970-01-01"' "$STATE_FILE")
+            TOTAL=$(jq -r '.total // 0' "$STATE_FILE")
+          else
+            LAST_DATE="1970-01-01"
+            TOTAL=0
+          fi
+
+          RESPONSE=$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPO}/traffic/clones")
+
+          NEW_TOTAL="$TOTAL"
+          NEW_LAST_DATE="$LAST_DATE"
+
+          while IFS=$'\t' read -r day count; do
+            [ -z "$day" ] && continue
+            DAY_ONLY="${day%%T*}"
+            if [[ "$DAY_ONLY" > "$LAST_DATE" ]]; then
+              NEW_TOTAL=$((NEW_TOTAL + count))
+              if [[ "$DAY_ONLY" > "$NEW_LAST_DATE" ]]; then
+                NEW_LAST_DATE="$DAY_ONLY"
+              fi
+            fi
+          done < <(echo "$RESPONSE" | jq -r '.clones[]? | "\(.timestamp)\t\(.count)"')
+
+          jq -n --arg total "$NEW_TOTAL" \
+            '{schemaVersion: 1, label: "clones", message: $total, color: "blue"}' \
+            > "$BADGE_FILE"
+
+          jq -n --arg total "$NEW_TOTAL" --arg lastDate "$NEW_LAST_DATE" \
+            '{total: ($total | tonumber), lastDate: $lastDate}' \
+            > "$STATE_FILE"
+
+          echo "Umumiy klon soni: ${NEW_TOTAL} (oxirgi hisoblangan sana: ${NEW_LAST_DATE})"
+
+      - name: O'zgarishlarni commit qilish
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: klon statistikasi yangilandi"
+          file_pattern: .github/badges/clone-count.json .github/badges/clone-state.json

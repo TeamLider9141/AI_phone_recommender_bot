@@ -1,5 +1,7 @@
 # 📱 Telefon tavsiya qiluvchi AI Telegram bot (MVP)
 
+[![Klonlar soni](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/TeamLider9141/AI_phone_recommender_bot/main/.github/badges/clone-count.json)](https://github.com/TeamLider9141/AI_phone_recommender_bot)
+
 Foydalanuvchi oddiy o'zbek tilida yozadi — bot Google Sheet'dagi bazadan eng mos
 telefonlarni topib, izoh bilan tavsiya qiladi.
 
@@ -193,6 +195,28 @@ So'rovning o'zida ham ishlaydi: «eng arzon 10 ta», «protsessor bo'yicha»,
 
 Protsessor saralashi chipset nomidan taxminiy tier balini hisoblaydi
 ([recommender.py](core/recommender.py) `_PROC_SCORES`) — yangi chipsetlarni shu jadvalga qo'shing.
+
+## Klonlar soni (README'dagi badge)
+
+Yuqoridagi "Klonlar soni" belgisi vaqt o'tishi bilan **o'sib boradi** — GitHub'ning
+o'zi `git clone`/"Download ZIP" statistikasini (Insights → Traffic → Git clones)
+faqat oxirgi 14 kun uchun saqlaydi, shuning uchun uni yo'qotmasdan yig'ib
+borish kerak:
+
+- [`.github/workflows/clone-count.yml`](.github/workflows/clone-count.yml) har kuni
+  (UTC 03:00) avtomatik ishga tushadi, GitHub Traffic API'dan yangi kunlar
+  sonini o'qib, umumiy hisobga qo'shadi va natijani
+  [`.github/badges/clone-count.json`](.github/badges/clone-count.json) fayliga yozib commit qiladi.
+- README'dagi badge shu JSON faylni shields.io "endpoint" formatida ko'rsatadi
+  — repo qanchalik ko'p klonlansa, son shunchalik o'sib boradi.
+
+**Bir martalik sozlash (faqat repo egasi qila oladi):**
+1. github.com/settings/tokens → **Generate new token (classic)** → `repo` scope
+   bilan token yarating (Traffic API push-huquqi talab qiladi).
+2. Repo → **Settings → Secrets and variables → Actions → New repository secret**
+   → nomi `TRAFFIC_PAT`, qiymati — yaratgan tokeningiz.
+3. **Actions → Klon statistikasini yangilash → Run workflow** orqali birinchi
+   marta qo'lda ishga tushiring (keyin avtomatik kunlik davom etadi).
 
 ## Keyingi bosqich (production)
 Deploy (Railway/VPS), webhook, analitika, rasm/tugmali natijalar, ko'p tillilik (uz/ru),
