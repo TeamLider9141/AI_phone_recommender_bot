@@ -56,6 +56,10 @@ _SOURCE_ALIASES = {
     "texno": "texnomart",
 }
 
+_BRAND_ALIAS_GROUPS = (
+    {"iphone", "apple"},
+)
+
 
 def _norm_key(key: str) -> str:
     return re.sub(r"[\s_\-\.]+", "", str(key).strip().lower())
@@ -196,4 +200,8 @@ def refresh(source: str | None = None) -> int:
 
 def known_brands(source: str | None = None) -> set[str]:
     """Bazadagi mavjud brendlar to'plami (kichik harfda). 'Topilmadi' tekshiruvi uchun."""
-    return {(p.brand or "").lower() for p in get_phones(source=source) if p.brand}
+    brands = {(p.brand or "").lower() for p in get_phones(source=source) if p.brand}
+    for group in _BRAND_ALIAS_GROUPS:
+        if brands & group:
+            brands.update(group)
+    return brands

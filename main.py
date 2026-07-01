@@ -359,7 +359,7 @@ async def _resort(f: QueryFilter, source: str | None = None) -> str:
 
 async def cmd_start(message: Message) -> None:
     await track_start_user(message)
-    await message.answer(WELCOME, reply_markup=_menu_for(message))
+    await message.answer(WELCOME, reply_markup=keyboards.source_choice_keyboard())
 
 
 async def cmd_help(message: Message) -> None:
@@ -379,7 +379,7 @@ async def cmd_clear(message: Message) -> None:
     USER_PENDING_SEARCHES.pop(chat_id, None)
     USER_LAST_SEARCHES.pop(chat_id, None)
     _RATE.pop(chat_id, None)
-    await message.answer("Tavsiyalar tozalandi. Yangi so'rov yuborishingiz mumkin.", reply_markup=_menu_for(message))
+    await message.answer(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
 
 
 async def cmd_reload(message: Message) -> None:
@@ -404,6 +404,12 @@ async def on_text(message: Message) -> None:
         return
     if message.text.startswith("/"):
         return
+    chat_id = message.chat.id
+    selected_source = USER_SELECTED_SOURCES.get(chat_id)
+    if not selected_source:
+        USER_PENDING_SEARCHES.pop(chat_id, None)
+        await message.answer(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
+        return
     if not _check_rate(message.chat.id):
         await message.answer(RATE_MSG, reply_markup=_menu_for(message))
         return
@@ -417,15 +423,9 @@ async def on_text(message: Message) -> None:
                 text = off_topic_warning_text(RUNTIME_SETTINGS.off_topic_block_minutes)
                 await message.answer(text, reply_markup=_menu_for(message))
             return
-        chat_id = message.chat.id
         pending = PendingSearch(text=message.text, parsed_filter=parsed_filter)
         USER_PENDING_SEARCHES[chat_id] = pending
         USER_LAST_SEARCHES[chat_id] = pending
-
-        selected_source = USER_SELECTED_SOURCES.get(chat_id)
-        if not selected_source:
-            await message.answer(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
-            return
 
         if not check_daily_limit(user_id):
             await message.answer(daily_limit_message(), reply_markup=_menu_for(message))
@@ -488,7 +488,6 @@ async def on_source_choice(query: CallbackQuery) -> None:
         if query.message is not None:
             await query.message.edit_text(
                 f"✅ {_source_choice_label(source)} tanlandi. Endi so'rov yozing.",
-                reply_markup=keyboards.source_choice_keyboard(),
             )
         return
 

@@ -111,20 +111,42 @@ def test_results_keyboard_has_source_reset_button() -> None:
     assert "🔎 Boshqa bazadan izlash" in button_texts
 
 
+async def test_start_prompts_for_source_choice() -> None:
+    old_admins = main.config.admin_ids
+    old_users_path = main.config.bot_users_path
+    main.config.admin_ids = []
+    try:
+        with TemporaryDirectory() as tmp:
+            main.config.bot_users_path = str(Path(tmp) / "bot_users.json")
+            msg = FakeMessage()
+
+            await main.cmd_start(msg)
+
+            assert msg.answers
+            text, markup = msg.answers[0]
+            assert "Assalomu alaykum" in text
+            assert markup is not None
+            button_texts = [button.text for row in markup.inline_keyboard for button in row]
+            assert "📚 Baza" in button_texts
+            assert "🛒 Texnomart" in button_texts
+    finally:
+        main.config.admin_ids = old_admins
+        main.config.bot_users_path = old_users_path
+
+
 async def test_on_text_prompts_for_source_when_none_selected() -> None:
     old_selected = dict(main.USER_SELECTED_SOURCES)
     old_pending = dict(main.USER_PENDING_SEARCHES)
     old_last = dict(main.USER_LAST_SEARCHES)
     old_parse = main.ai.parse_query
-    old_to_thread = main.asyncio.to_thread
-
-    async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
-        return func(*args, **kwargs)
 
     main.USER_SELECTED_SOURCES.clear()
     main.USER_PENDING_SEARCHES.clear()
-    main.ai.parse_query = lambda text: QueryFilter(is_phone_related=True, brand="Samsung")
-    main.asyncio.to_thread = inline_to_thread
+
+    def parse_should_not_run(text):  # noqa: ANN001
+        raise AssertionError(f"parse_query should wait until source is selected: {text}")
+
+    main.ai.parse_query = parse_should_not_run
 
     try:
         msg = FakeMessage()
@@ -136,7 +158,7 @@ async def test_on_text_prompts_for_source_when_none_selected() -> None:
         text, markup = msg.answers[0]
         assert "qaysi bazadan" in text.lower()
         assert markup is not None
-        assert msg.chat.id in main.USER_PENDING_SEARCHES
+        assert msg.chat.id not in main.USER_PENDING_SEARCHES
     finally:
         main.USER_SELECTED_SOURCES.clear()
         main.USER_SELECTED_SOURCES.update(old_selected)
@@ -145,7 +167,6 @@ async def test_on_text_prompts_for_source_when_none_selected() -> None:
         main.USER_LAST_SEARCHES.clear()
         main.USER_LAST_SEARCHES.update(old_last)
         main.ai.parse_query = old_parse
-        main.asyncio.to_thread = old_to_thread
 
 
 async def test_on_source_choice_remembers_selection_and_uses_pending_query() -> None:
@@ -207,6 +228,44 @@ async def test_process_reports_empty_texnomart_source_explicitly() -> None:
     finally:
         main.sheets.get_phones = old_get_phones
         main.ai.parse_query = old_parse
+        main.asyncio.to_thread = old_to_thread
+
+
+async def test_process_matches_iphone_query_against_apple_brand() -> None:
+    old_get_phones = main.sheets.get_phones
+    old_parse = main.ai.parse_query
+    old_format_reply = main.ai.format_reply
+    old_to_thread = main.asyncio.to_thread
+
+    async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
+        return func(*args, **kwargs)
+
+    main.sheets.get_phones = lambda source=None: [  # noqa: ARG005
+        Phone(
+            brand="Apple",
+            model="iPhone 15 Pro Max",
+            price=18_900_000,
+            detail_url="https://texnomart.uz/product/detail/iphone/",
+        )
+    ]
+    main.ai.parse_query = lambda text: QueryFilter(  # noqa: ARG005
+        is_phone_related=True,
+        brand="iPhone",
+        sort_by="price_desc",
+    )
+    main.ai.format_reply = lambda phones, f: "\n".join(phone.title() for phone in phones)  # noqa: ARG005
+    main.asyncio.to_thread = inline_to_thread
+
+    try:
+        reply, f, has_results = await main._process("iPhone eng qimmatidan kerak", source="texnomart")
+
+        assert has_results is True
+        assert f.brand == "iPhone"
+        assert "iPhone 15 Pro Max" in reply
+    finally:
+        main.sheets.get_phones = old_get_phones
+        main.ai.parse_query = old_parse
+        main.ai.format_reply = old_format_reply
         main.asyncio.to_thread = old_to_thread
 
 
@@ -445,7 +504,7 @@ async def test_clear_command() -> None:
     assert msg.chat.id not in main._RATE
     assert msg.bot.deleted == [(msg.chat.id, 101), (msg.chat.id, 102)]
     assert msg.answers
-    assert "tozalandi" in msg.answers[0][0].lower()
+    assert "qaysi bazadan" in msg.answers[0][0].lower()
     assert msg.answers[0][1] is not None
 
     main.USER_FILTERS.clear()
@@ -470,6 +529,7 @@ def main_test() -> None:
     test_source_block_renders_clickable_texno_link()
     test_source_choice_keyboard_has_two_sources()
     test_results_keyboard_has_source_reset_button()
+    asyncio.run(test_start_prompts_for_source_choice())
     test_daily_limit_for_non_admin_only()
     test_daily_limit_settings_text()
     test_update_daily_limit_from_settings_action()
@@ -480,6 +540,7 @@ def main_test() -> None:
     asyncio.run(test_on_text_prompts_for_source_when_none_selected())
     asyncio.run(test_on_source_choice_remembers_selection_and_uses_pending_query())
     asyncio.run(test_process_reports_empty_texnomart_source_explicitly())
+    asyncio.run(test_process_matches_iphone_query_against_apple_brand())
     asyncio.run(test_reset_source_choice_clears_selection_and_reprompts())
     asyncio.run(test_on_settings_dispatches_blockmin_field())
     asyncio.run(test_on_settings_rejects_non_admin())
