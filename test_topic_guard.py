@@ -147,6 +147,7 @@ async def test_off_topic_warning_then_silent_block_without_daily_usage() -> None
     main.OFF_TOPIC_GUARD.clear()
     main.DAILY_USAGE.clear()
     main._RATE.clear()
+    main.USER_SELECTED_SOURCES[4567] = "sheet"  # FakeChat.id doim 4567 (manba tanlangan holat)
 
     try:
         first = FakeMessage(user_id=777)
@@ -165,6 +166,7 @@ async def test_off_topic_warning_then_silent_block_without_daily_usage() -> None
         main.asyncio.to_thread = old_to_thread
         main.OFF_TOPIC_GUARD.clear()
         main.DAILY_USAGE.clear()
+        main.USER_SELECTED_SOURCES.pop(4567, None)
         main._RATE.clear()
 
 
@@ -177,7 +179,7 @@ async def test_admin_is_exempt_from_off_topic_guard() -> None:
     async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
         return func(*args, **kwargs)
 
-    async def fake_process(text, parsed_filter=None):  # noqa: ANN001
+    async def fake_process(text, parsed_filter=None, source=None):  # noqa: ANN001
         return ("ok", QueryFilter(is_phone_related=False), True)
 
     main.ai.parse_query = lambda text: QueryFilter(is_phone_related=False)
@@ -187,6 +189,7 @@ async def test_admin_is_exempt_from_off_topic_guard() -> None:
     main.OFF_TOPIC_GUARD.clear()
     main.DAILY_USAGE.clear()
     main._RATE.clear()
+    main.USER_SELECTED_SOURCES[4567] = "sheet"  # FakeChat.id doim 4567 (manba tanlangan holat)
 
     try:
         admin_msg = FakeMessage(user_id=777)
@@ -204,6 +207,7 @@ async def test_admin_is_exempt_from_off_topic_guard() -> None:
         main.OFF_TOPIC_GUARD.clear()
         main.DAILY_USAGE.clear()
         main._RATE.clear()
+        main.USER_SELECTED_SOURCES.pop(4567, None)
 
 
 def main_test() -> None:

@@ -405,11 +405,6 @@ async def on_text(message: Message) -> None:
     if message.text.startswith("/"):
         return
     chat_id = message.chat.id
-    selected_source = USER_SELECTED_SOURCES.get(chat_id)
-    if not selected_source:
-        USER_PENDING_SEARCHES.pop(chat_id, None)
-        await message.answer(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
-        return
     if not _check_rate(message.chat.id):
         await message.answer(RATE_MSG, reply_markup=_menu_for(message))
         return
@@ -417,6 +412,17 @@ async def on_text(message: Message) -> None:
     user_id = message.from_user.id if message.from_user else message.chat.id
     try:
         parsed_filter = await asyncio.to_thread(ai.parse_query, message.text)
+
+        selected_source = USER_SELECTED_SOURCES.get(chat_id)
+        if not selected_source:
+            # Manba hali tanlanmagan — so'rovni yo'qotmasdan saqlab qo'yamiz,
+            # manba tanlangach avtomatik ishga tushadi (retype qildirmaslik uchun).
+            pending = PendingSearch(text=message.text, parsed_filter=parsed_filter)
+            USER_PENDING_SEARCHES[chat_id] = pending
+            USER_LAST_SEARCHES[chat_id] = pending
+            await message.answer(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
+            return
+
         if not parsed_filter.is_phone_related and not is_admin(user_id):
             action = OFF_TOPIC_GUARD.register_off_topic(user_id)
             if action == "warn":

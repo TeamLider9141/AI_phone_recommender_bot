@@ -56,14 +56,22 @@ def test_model_word_marks_text_as_phone_related() -> None:
     assert ai.is_phone_related_text("bu qanday model?") is True
 
 
+def test_tel_shorthand_and_suffixed_ram_marks_phone_related() -> None:
+    assert ai.is_phone_related_text("12-20GB ramlik Tel kerak arzonidan") is True
+    assert ai.is_phone_related_text("tel kerak") is True
+    assert ai.is_phone_related_text("otel haqida") is False
+    assert ai.is_phone_related_text("kartel") is False
+
+
 def main_test() -> None:
-    test_end_to_end_a15_query_matches_only_db_record()
+    test_end_to_end_a51_query_matches_only_db_record()
     test_extracts_concatenated_model_number()
     test_extracts_model_with_explicit_brand()
     test_does_not_treat_spec_values_as_model()
     test_does_not_treat_network_generation_as_model()
     test_model_alongside_network_generation_still_detected()
     test_model_word_marks_text_as_phone_related()
+    test_tel_shorthand_and_suffixed_ram_marks_phone_related()
     print("fallback parse tests passed")
 
 

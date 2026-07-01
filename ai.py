@@ -124,7 +124,7 @@ _COLORS = {"qora": "qora", "oq": "oq", "ko'k": "ko'k", "kok": "ko'k", "yashil": 
            "binafsha": "binafsha", "titan": "titan"}
 
 _PHONE_TOPIC_TERMS = (
-    "telefon", "smartfon", "smartphone", "phone", "mobil", "android", "iphone",
+    "telefon", "smartfon", "smartphone", "phone", "tel", "mobil", "android", "iphone",
     "ios", "kamera", "camera", "batareya", "batareyka", "battery", "ram",
     "xotira", "storage", "processor", "protsessor", "chipset", "snapdragon",
     "mediatek", "dimensity", "exynos", "model", "modeli",
@@ -159,7 +159,7 @@ def _extract_model_token(text: str) -> str | None:
 # O'zbek tili qo'shimchali (agglutinativ): "Samsungdan", "telefonlarni",
 # "iPhoneni" kabi so'zlar ham termin sifatida tanilishi uchun, so'z tagidan
 # keyin keladigan keng tarqalgan qo'shimchalar zanjirini ham qabul qilamiz.
-_UZ_SUFFIX = r"(?:ning|lar|dan|tan|gacha|day|dek|ni|ga|qa|ka|da|ta|im|ing|i)*"
+_UZ_SUFFIX = r"(?:ning|lar|lik|dan|tan|gacha|day|dek|ni|ga|qa|ka|da|ta|im|ing|i)*"
 
 
 def is_phone_related_text(text: str) -> bool:

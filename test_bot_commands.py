@@ -135,18 +135,21 @@ async def test_start_prompts_for_source_choice() -> None:
 
 
 async def test_on_text_prompts_for_source_when_none_selected() -> None:
+    """Manba hali tanlanmagan bo'lsa ham so'rov yo'qotilmasdan pending sifatida
+    saqlanishi kerak — manba tanlangach avtomatik ishga tushadi (retype shart emas)."""
     old_selected = dict(main.USER_SELECTED_SOURCES)
     old_pending = dict(main.USER_PENDING_SEARCHES)
     old_last = dict(main.USER_LAST_SEARCHES)
     old_parse = main.ai.parse_query
+    old_to_thread = main.asyncio.to_thread
+
+    async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
+        return func(*args, **kwargs)
 
     main.USER_SELECTED_SOURCES.clear()
     main.USER_PENDING_SEARCHES.clear()
-
-    def parse_should_not_run(text):  # noqa: ANN001
-        raise AssertionError(f"parse_query should wait until source is selected: {text}")
-
-    main.ai.parse_query = parse_should_not_run
+    main.ai.parse_query = lambda text: QueryFilter(is_phone_related=True, brand="Samsung")
+    main.asyncio.to_thread = inline_to_thread
 
     try:
         msg = FakeMessage()
@@ -158,7 +161,10 @@ async def test_on_text_prompts_for_source_when_none_selected() -> None:
         text, markup = msg.answers[0]
         assert "qaysi bazadan" in text.lower()
         assert markup is not None
-        assert msg.chat.id not in main.USER_PENDING_SEARCHES
+        pending = main.USER_PENDING_SEARCHES.get(msg.chat.id)
+        assert pending is not None
+        assert pending.text == "Samsung kerak"
+        assert pending.parsed_filter.brand == "Samsung"
     finally:
         main.USER_SELECTED_SOURCES.clear()
         main.USER_SELECTED_SOURCES.update(old_selected)
@@ -167,6 +173,7 @@ async def test_on_text_prompts_for_source_when_none_selected() -> None:
         main.USER_LAST_SEARCHES.clear()
         main.USER_LAST_SEARCHES.update(old_last)
         main.ai.parse_query = old_parse
+        main.asyncio.to_thread = old_to_thread
 
 
 async def test_on_source_choice_remembers_selection_and_uses_pending_query() -> None:
