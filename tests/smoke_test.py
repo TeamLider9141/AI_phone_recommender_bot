@@ -1,12 +1,12 @@
 """Kalitlarsiz, offline tekshiruv: CSV yuklash + regex parse + saralash + shablon javob.
 
-Telegram/Gemini kalitlari shart EMAS. Ishga tushirish: python smoke_test.py
+Telegram/Gemini kalitlari shart EMAS. Ishga tushirish: python3 -m tests.smoke_test (repo ildizidan)
 """
 from __future__ import annotations
 
-import ai
-import sheets
-from recommender import recommend
+from core import ai
+from sources import sheets
+from core.recommender import recommend
 
 
 def section(title: str) -> None:

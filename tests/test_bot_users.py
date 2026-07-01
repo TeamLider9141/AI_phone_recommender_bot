@@ -1,13 +1,13 @@
 """Bot user tracking storage tests.
 
-Run with: python3 test_bot_users.py
+Run with: python3 -m tests.test_bot_users (repo ildizidan)
 """
 from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import bot_users
+from sources import bot_users
 
 
 def test_upsert_user_tracks_first_and_repeat_start() -> None:

@@ -4,8 +4,8 @@ from __future__ import annotations
 import re
 from dataclasses import replace
 
-from config import config
-from models import Phone, QueryFilter
+from core.config import config
+from core.models import Phone, QueryFilter
 
 # "X atrofida" so'ralganda narx oralig'i: target ±40%. Bundan uzoq narxlar ko'rsatilmaydi.
 PRICE_BAND = 0.40

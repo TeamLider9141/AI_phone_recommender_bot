@@ -1,12 +1,12 @@
 """Regex fallback parser (Gemini yo'q/xato bo'lganda) uchun testlar.
 
-Run with: python3 test_fallback_parse.py
+Run with: python3 -m tests.test_fallback_parse (repo ildizidan)
 """
 from __future__ import annotations
 
-import ai
-from recommender import recommend
-from sheets import load_phones
+from core import ai
+from core.recommender import recommend
+from sources.sheets import load_phones
 
 
 def test_end_to_end_a51_query_matches_only_db_record() -> None:

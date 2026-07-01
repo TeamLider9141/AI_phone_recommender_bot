@@ -1,6 +1,6 @@
 """Lightweight checks for bot command handlers.
 
-Run with: python3 test_bot_commands.py
+Run with: python3 -m tests.test_bot_commands (repo ildizidan)
 """
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from datetime import date
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import ai
-import keyboards
-import main
-from models import Phone, QueryFilter
+from core import ai
+from bot import keyboards
+from bot import main
+from core.models import Phone, QueryFilter
 
 
 class FakeChat:

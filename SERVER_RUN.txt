@@ -24,10 +24,10 @@ Kamida quyidagilarni to'ldiring:
 Google service account ishlatsangiz, credentials.json faylini project root'ga joylang.
 
 6) Tez sinov
-python smoke_test.py
+python3 -m tests.smoke_test
 
 7) Botni qo'lda ishga tushirish
-python main.py
+python run.py
 
 8) GitHub'dagi o'zgarishlarni qo'llash
 
@@ -61,7 +61,7 @@ Wants=network-online.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/AI_phone_recommender_bot
-ExecStart=/home/ubuntu/AI_phone_recommender_bot/.venv/bin/python /home/ubuntu/AI_phone_recommender_bot/main.py
+ExecStart=/home/ubuntu/AI_phone_recommender_bot/.venv/bin/python /home/ubuntu/AI_phone_recommender_bot/run.py
 Restart=always
 RestartSec=5
 Environment=PYTHONUNBUFFERED=1

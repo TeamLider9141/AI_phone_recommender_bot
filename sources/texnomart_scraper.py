@@ -14,7 +14,7 @@ from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse, parse_qsl, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from models import Phone
+from core.models import Phone
 
 logger = logging.getLogger(__name__)
 

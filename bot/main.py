@@ -14,14 +14,13 @@ from aiogram.enums import ChatAction, ParseMode
 from aiogram.filters import Command, CommandStart
 from aiogram.types import BotCommand, CallbackQuery, Message
 
-import ai
-import bot_users
-import keyboards
-import sheets
-from config import config
-from models import QueryFilter, SORT_LABELS
-from recommender import recommend
-from topic_guard import OffTopicGuard, SilentBlockMiddleware, off_topic_warning_text
+from core import ai
+from core.config import config
+from core.models import QueryFilter, SORT_LABELS
+from core.recommender import recommend
+from bot import keyboards
+from bot.topic_guard import OffTopicGuard, SilentBlockMiddleware, off_topic_warning_text
+from sources import bot_users, sheets
 
 # Foydalanuvchining oxirgi so'rov filtri (chat_id -> QueryFilter). Tugma bosilganda kerak.
 USER_FILTERS: dict[int, QueryFilter] = {}

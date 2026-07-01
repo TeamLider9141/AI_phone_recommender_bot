@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import asyncio
 
-import ai
-import main
-import models
-from models import QueryFilter
-from topic_guard import OffTopicGuard, SilentBlockMiddleware
+from core import ai
+from bot import main
+from core import models
+from core.models import QueryFilter
+from bot.topic_guard import OffTopicGuard, SilentBlockMiddleware
 
 
 class FakeChat:

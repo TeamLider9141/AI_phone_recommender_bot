@@ -12,8 +12,8 @@ import json
 import logging
 import re
 
-from config import config
-from models import QUERY_FILTER_SCHEMA, Phone, QueryFilter
+from core.config import config
+from core.models import QUERY_FILTER_SCHEMA, Phone, QueryFilter
 
 logger = logging.getLogger(__name__)
 

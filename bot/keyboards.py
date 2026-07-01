@@ -4,7 +4,7 @@ from __future__ import annotations
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from models import SORT_LABELS
+from core.models import SORT_LABELS
 
 
 def main_menu_keyboard(is_admin: bool = False) -> ReplyKeyboardMarkup:

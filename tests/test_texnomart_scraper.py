@@ -1,15 +1,14 @@
 """Texnomart scraper uchun testlar.
 
-Run with: python3 test_texnomart_scraper.py
+Run with: python3 -m tests.test_texnomart_scraper (repo ildizidan)
 """
 from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import sheets
-import texnomart_scraper
-from models import Phone
+from sources import sheets, texnomart_scraper
+from core.models import Phone
 
 
 CATALOG_HTML = """

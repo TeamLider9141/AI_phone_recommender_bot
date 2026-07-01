@@ -1,6 +1,6 @@
 """Texnomart JSON cache uchun testlar.
 
-Run with: python3 test_texnomart_cache.py
+Run with: python3 -m tests.test_texnomart_cache (repo ildizidan)
 """
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ import time
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import texnomart_cache
-from models import Phone
+from sources import texnomart_cache
+from core.models import Phone
 
 
 def test_refresh_cache_preserves_source_links() -> None:

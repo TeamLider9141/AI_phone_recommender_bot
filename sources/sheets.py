@@ -15,10 +15,9 @@ from typing import Optional
 from urllib.parse import quote
 from urllib.request import urlopen
 
-from config import config
-from models import Phone
-import texnomart_cache
-import texnomart_scraper
+from core.config import config
+from core.models import Phone
+from sources import texnomart_cache, texnomart_scraper
 
 logger = logging.getLogger(__name__)
 
