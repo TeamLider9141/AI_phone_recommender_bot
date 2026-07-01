@@ -110,9 +110,10 @@ tekshiradi. Birinchi aloqasiz so'rovda ogohlantirish beradi. Sozlangan
 "urinishlar soni"ga yetganda), foydalanuvchi shu vaqtga jim bloklanadi.
 
 Blok vaqtida matn, komandalar va inline tugmalar javobsiz qoldiriladi. Qoida
-adminlarga ham tegishli. Strike va bloklar xotirada saqlanadi, shu sababli bot
-qayta ishga tushsa ular tozalanadi. Off-topic so'rovlar kunlik telefon so'rovi
-limitidan foydalanmaydi.
+faqat oddiy foydalanuvchilarga tegishli — adminlar (`ADMIN_IDS`) off-topic
+ogohlantirish/bloklashdan mustasno. Strike va bloklar xotirada saqlanadi, shu
+sababli bot qayta ishga tushsa ular tozalanadi. Off-topic so'rovlar kunlik
+telefon so'rovi limitidan foydalanmaydi.
 
 Standart qiymatlar: bloklash vaqti **60 daqiqa**, urinishlar soni **2 ta**
 (`.env`dagi `OFF_TOPIC_BLOCK_MINUTES` / `OFF_TOPIC_MAX_ATTEMPTS`). Admin

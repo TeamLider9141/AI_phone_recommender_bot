@@ -168,6 +168,44 @@ async def test_off_topic_warning_then_silent_block_without_daily_usage() -> None
         main._RATE.clear()
 
 
+async def test_admin_is_exempt_from_off_topic_guard() -> None:
+    old_parse = main.ai.parse_query
+    old_to_thread = main.asyncio.to_thread
+    old_admins = main.config.admin_ids
+    old_process = main._process
+
+    async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
+        return func(*args, **kwargs)
+
+    async def fake_process(text, parsed_filter=None):  # noqa: ANN001
+        return ("ok", QueryFilter(is_phone_related=False), True)
+
+    main.ai.parse_query = lambda text: QueryFilter(is_phone_related=False)
+    main.asyncio.to_thread = inline_to_thread
+    main.config.admin_ids = [777]
+    main._process = fake_process
+    main.OFF_TOPIC_GUARD.clear()
+    main.DAILY_USAGE.clear()
+    main._RATE.clear()
+
+    try:
+        admin_msg = FakeMessage(user_id=777)
+
+        await main.on_text(admin_msg)
+
+        assert not main.OFF_TOPIC_GUARD.is_blocked(777)
+        assert admin_msg.answers
+        assert admin_msg.answers[0][0] == "ok"  # off-topic ogohlantirishi emas, oddiy javob
+    finally:
+        main.ai.parse_query = old_parse
+        main.asyncio.to_thread = old_to_thread
+        main.config.admin_ids = old_admins
+        main._process = old_process
+        main.OFF_TOPIC_GUARD.clear()
+        main.DAILY_USAGE.clear()
+        main._RATE.clear()
+
+
 def main_test() -> None:
     test_phone_topic_classifier()
     test_fallback_parse_carries_topic_classification()
@@ -179,6 +217,7 @@ def main_test() -> None:
     test_settings_update_functions_reconfigure_guard()
     asyncio.run(test_silent_block_middleware_stops_updates())
     asyncio.run(test_off_topic_warning_then_silent_block_without_daily_usage())
+    asyncio.run(test_admin_is_exempt_from_off_topic_guard())
     print("topic guard tests passed")
 
 

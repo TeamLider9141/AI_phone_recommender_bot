@@ -324,7 +324,7 @@ async def on_text(message: Message) -> None:
     user_id = message.from_user.id if message.from_user else message.chat.id
     try:
         parsed_filter = await asyncio.to_thread(ai.parse_query, message.text)
-        if not parsed_filter.is_phone_related:
+        if not parsed_filter.is_phone_related and not is_admin(user_id):
             action = OFF_TOPIC_GUARD.register_off_topic(user_id)
             if action == "warn":
                 text = off_topic_warning_text(RUNTIME_SETTINGS.off_topic_block_minutes)

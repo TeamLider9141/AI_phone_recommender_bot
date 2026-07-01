@@ -35,7 +35,9 @@ State is stored per Telegram user ID in memory.
   request is treated as a new first offense.
 - When a silent block expires, all strike and block state for that user is
   cleared.
-- The rule also applies to administrators.
+- Administrators (`ADMIN_IDS`) are exempt from strikes and blocks; the rule
+  only applies to regular users. (Updated 2026-07-01: originally applied to
+  admins too, changed per product decision.)
 - State is intentionally in memory, matching the current daily-limit
   architecture. Restarting the bot clears strikes and blocks.
 
