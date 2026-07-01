@@ -29,7 +29,8 @@ class Config:
     sheet_name: str            # ish varag'i (tab) nomi
     phone_source: str = "sheet"  # "sheet" | "texnomart"
     texnomart_base_url: str = "https://texnomart.uz/katalog/smartfony/"
-    texnomart_max_pages: int = 0
+    texnomart_max_pages: int = 16
+    texnomart_max_items: int = 80
     admin_ids: list[int] = field(default_factory=list)
     cache_ttl: int = 300       # soniya
     gemini_model: str = "gemini-2.0-flash"
@@ -57,7 +58,8 @@ def load_config() -> Config:
             "TEXNOMART_BASE_URL",
             "https://texnomart.uz/katalog/smartfony/",
         ).strip(),
-        texnomart_max_pages=int(os.getenv("TEXNOMART_MAX_PAGES", "0")),
+        texnomart_max_pages=int(os.getenv("TEXNOMART_MAX_PAGES", "16")),
+        texnomart_max_items=int(os.getenv("TEXNOMART_MAX_ITEMS", "80")),
         admin_ids=_int_list(os.getenv("ADMIN_IDS")),
         cache_ttl=int(os.getenv("CACHE_TTL", "300")),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip(),

@@ -34,8 +34,14 @@ python main.py
 Serverda kod yangilangan bo'lsa:
 git pull
 pip install -r requirements.txt
+sudo systemctl restart ai_phone_bot
 
-Agar dependency o'zgargan bo'lsa, qayta o'rnatish kerak bo'ladi.
+Agar dependency o'zgargan bo'lsa, qayta o'rnatish kerak bo'ladi. Kod yangilangandan
+keyin service restart qilinmasa, eski versiya ishlashda davom etadi.
+
+Texnomart sekin ishlasa .env ichida shu qiymatlarni kichikroq qiling:
+TEXNOMART_MAX_PAGES=5
+TEXNOMART_MAX_ITEMS=50
 
 9) Production uchun systemd tavsiya qilinadi
 

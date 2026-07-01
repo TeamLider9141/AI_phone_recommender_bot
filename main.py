@@ -270,6 +270,13 @@ async def _process(
         phones = sheets.get_phones(source=source)
         f = parsed_filter or ai.parse_query(text)
         if not phones:
+            if sheets.resolve_source(source) == "texnomart":
+                return (
+                    "🛒 Texnomart hozircha bo'sh yoki yuklanmadi. "
+                    "Boshqa bazani tanlab ko'ring yoki keyinroq urinib ko'ring.",
+                    f,
+                    False,
+                )
             return "Baza hozircha bo'sh yoki yuklanmadi. Administrator bilan bog'laning.", f, False
         # So'ralgan brend bazada umuman yo'q bo'lsa — aniq "topilmadi".
         if f.brand and f.brand.lower() not in sheets.known_brands(source=source):

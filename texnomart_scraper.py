@@ -20,7 +20,8 @@ logger = logging.getLogger(__name__)
 
 CATALOG_URL = "https://texnomart.uz/katalog/smartfony/"
 DEFAULT_TIMEOUT = 20
-DEFAULT_MAX_PAGES = 50
+DEFAULT_MAX_PAGES = 16
+DEFAULT_MAX_ITEMS = 80
 
 _TITLE_SPEC_RE = re.compile(
     r"^(?P<name>.+?)\s+(?P<ram>\d{1,2})\s*/\s*(?P<storage>\d{1,4})\s*(?:GB|Gb|ГБ)?"
@@ -393,10 +394,12 @@ def _candidate_page_urls(base_url: str, page: int) -> list[str]:
 def scrape_catalog(
     base_url: str = CATALOG_URL,
     max_pages: int = 0,
+    max_items: int = 0,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> list[Phone]:
     """Texnomart katalogini page by page scrape qiladi."""
     limit = max_pages if max_pages and max_pages > 0 else DEFAULT_MAX_PAGES
+    item_limit = max_items if max_items and max_items > 0 else DEFAULT_MAX_ITEMS
     phones: list[Phone] = []
     seen: set[str] = set()
 
@@ -425,5 +428,7 @@ def scrape_catalog(
         for phone in page_phones:
             if phone.detail_url:
                 seen.add(phone.detail_url)
+        if len(phones) >= item_limit:
+            return phones[:item_limit]
 
     return phones

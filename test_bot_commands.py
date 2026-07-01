@@ -170,6 +170,23 @@ async def test_on_source_choice_remembers_selection_and_uses_pending_query() -> 
         main._process = old_process
 
 
+async def test_process_reports_empty_texnomart_source_explicitly() -> None:
+    old_get_phones = main.sheets.get_phones
+    old_parse = main.ai.parse_query
+    main.sheets.get_phones = lambda source=None: []  # noqa: ARG005
+    main.ai.parse_query = lambda text: QueryFilter(is_phone_related=True, brand="Samsung")
+
+    try:
+        reply, f, has_results = await main._process("Samsung kerak", source="texnomart")
+
+        assert has_results is False
+        assert "texnomart" in reply.lower()
+        assert f.brand == "Samsung"
+    finally:
+        main.sheets.get_phones = old_get_phones
+        main.ai.parse_query = old_parse
+
+
 async def test_reset_source_choice_clears_selection_and_reprompts() -> None:
     old_filters = dict(main.USER_FILTERS)
     old_selected = dict(main.USER_SELECTED_SOURCES)
@@ -387,6 +404,7 @@ def main_test() -> None:
     test_update_off_topic_settings_reconfigures_guard()
     asyncio.run(test_on_text_prompts_for_source_when_none_selected())
     asyncio.run(test_on_source_choice_remembers_selection_and_uses_pending_query())
+    asyncio.run(test_process_reports_empty_texnomart_source_explicitly())
     asyncio.run(test_reset_source_choice_clears_selection_and_reprompts())
     asyncio.run(test_on_settings_dispatches_blockmin_field())
     asyncio.run(test_on_settings_rejects_non_admin())

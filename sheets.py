@@ -128,6 +128,7 @@ def _load_from_texnomart() -> list[Phone]:
     phones = texnomart_scraper.scrape_catalog(
         base_url=config.texnomart_base_url,
         max_pages=config.texnomart_max_pages,
+        max_items=config.texnomart_max_items,
     )
     logger.info("Texnomart'dan %d ta telefon yuklandi", len(phones))
     return phones
@@ -141,9 +142,11 @@ def load_phones(source: str | None = None) -> list[Phone]:
             phones = _load_from_texnomart()
             if phones:
                 return phones
-            logger.warning("Texnomart scrape bo'sh qaytdi, fallback manbalarga o'tilyapti")
+            logger.warning("Texnomart scrape bo'sh qaytdi")
+            return []
         except Exception:  # noqa: BLE001 — manba xatosi bo'lsa boshqa manbalarga tushamiz
-            logger.exception("Texnomart scrape'da xato, fallback manbalarga o'tilyapti")
+            logger.exception("Texnomart scrape'da xato")
+            return []
 
     if config.google_sheet_id:
         try:
