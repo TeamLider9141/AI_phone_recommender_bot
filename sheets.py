@@ -17,6 +17,7 @@ from urllib.request import urlopen
 
 from config import config
 from models import Phone
+import texnomart_scraper
 
 logger = logging.getLogger(__name__)
 
@@ -33,13 +34,26 @@ _FIELD_ALIASES = {
     "proctier": "proc_tier", "protsessordarajasi": "proc_tier", "tier": "proc_tier", "cpurank": "proc_tier",
     "battery": "battery", "batareyka": "battery", "batareya": "battery", "akkumulyator": "battery",
     "os": "os", "operatsiontizim": "os",
+    "detailurl": "detail_url", "url": "detail_url", "link": "detail_url",
+    "sourcelabel": "source_label", "source": "source_label",
     "price": "price", "narx": "price", "narxi": "price",
 }
 
 _INT_FIELDS = {"ram", "storage", "camera_front", "camera_back", "battery", "price", "proc_tier"}
 
-_cache: list[Phone] = []
-_loaded_at: float = 0.0
+_cache_by_source: dict[str, list[Phone]] = {}
+_loaded_at_by_source: dict[str, float] = {}
+
+_SOURCE_ALIASES = {
+    "sheet": "sheet",
+    "baza": "sheet",
+    "base": "sheet",
+    "database": "sheet",
+    "db": "sheet",
+    "google": "sheet",
+    "texnomart": "texnomart",
+    "texno": "texnomart",
+}
 
 
 def _norm_key(key: str) -> str:
@@ -68,6 +82,12 @@ def _row_to_phone(row: dict) -> Phone:
         else:
             mapped[field] = val
     return Phone(**mapped)
+
+
+def resolve_source(source: str | None = None) -> str:
+    """Manba kalitini normallashtiradi: sheet yoki texnomart."""
+    raw = (source or config.phone_source or "sheet").strip().lower()
+    return _SOURCE_ALIASES.get(raw, raw if raw in {"sheet", "texnomart"} else "sheet")
 
 
 def _load_from_sheet() -> list[Phone]:
@@ -103,8 +123,28 @@ def _load_from_csv(path: str = "sample_data.csv") -> list[Phone]:
         return [_row_to_phone(r) for r in csv.DictReader(f)]
 
 
-def load_phones() -> list[Phone]:
+def _load_from_texnomart() -> list[Phone]:
+    """Texnomart katalogidan to'g'ridan-to'g'ri o'qiydi."""
+    phones = texnomart_scraper.scrape_catalog(
+        base_url=config.texnomart_base_url,
+        max_pages=config.texnomart_max_pages,
+    )
+    logger.info("Texnomart'dan %d ta telefon yuklandi", len(phones))
+    return phones
+
+
+def load_phones(source: str | None = None) -> list[Phone]:
     """Manbadan telefonlar ro'yxatini yuklaydi (cachesiz, to'g'ridan-to'g'ri)."""
+    resolved_source = resolve_source(source)
+    if resolved_source == "texnomart":
+        try:
+            phones = _load_from_texnomart()
+            if phones:
+                return phones
+            logger.warning("Texnomart scrape bo'sh qaytdi, fallback manbalarga o'tilyapti")
+        except Exception:  # noqa: BLE001 — manba xatosi bo'lsa boshqa manbalarga tushamiz
+            logger.exception("Texnomart scrape'da xato, fallback manbalarga o'tilyapti")
+
     if config.google_sheet_id:
         try:
             phones = _load_from_sheet()
@@ -117,23 +157,24 @@ def load_phones() -> list[Phone]:
     return phones
 
 
-def get_phones() -> list[Phone]:
+def get_phones(source: str | None = None) -> list[Phone]:
     """Cache'langan ro'yxat; TTL o'tgan bo'lsa qayta yuklaydi."""
-    global _cache, _loaded_at
-    if not _cache or (time.time() - _loaded_at) > config.cache_ttl:
-        _cache = load_phones()
-        _loaded_at = time.time()
-    return _cache
+    resolved_source = resolve_source(source)
+    loaded_at = _loaded_at_by_source.get(resolved_source, 0.0)
+    if resolved_source not in _cache_by_source or (time.time() - loaded_at) > config.cache_ttl:
+        _cache_by_source[resolved_source] = load_phones(resolved_source)
+        _loaded_at_by_source[resolved_source] = time.time()
+    return _cache_by_source[resolved_source]
 
 
-def refresh() -> int:
+def refresh(source: str | None = None) -> int:
     """Majburiy qayta yuklash (admin /reload). Yuklangan telefonlar sonini qaytaradi."""
-    global _cache, _loaded_at
-    _cache = load_phones()
-    _loaded_at = time.time()
-    return len(_cache)
+    resolved_source = resolve_source(source)
+    _cache_by_source[resolved_source] = load_phones(resolved_source)
+    _loaded_at_by_source[resolved_source] = time.time()
+    return len(_cache_by_source[resolved_source])
 
 
-def known_brands() -> set[str]:
+def known_brands(source: str | None = None) -> set[str]:
     """Bazadagi mavjud brendlar to'plami (kichik harfda). 'Topilmadi' tekshiruvi uchun."""
-    return {(p.brand or "").lower() for p in get_phones() if p.brand}
+    return {(p.brand or "").lower() for p in get_phones(source=source) if p.brand}

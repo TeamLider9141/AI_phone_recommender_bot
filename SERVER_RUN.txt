@@ -1,0 +1,65 @@
+AI Phone Recommender Bot - Serverda ishga tushirish
+
+1) Loyihani oching
+cd ~/AI_phone_recommender_bot
+
+2) Virtual muhit yarating
+python3 -m venv .venv
+source .venv/bin/activate
+
+3) Kutubxonalarni o'rnating
+pip install -r requirements.txt
+
+4) .env faylni tayyorlang
+cp .env.example .env
+nano .env
+
+Kamida quyidagilarni to'ldiring:
+- TELEGRAM_BOT_TOKEN
+- GEMINI_API_KEY
+- GOOGLE_SHEET_ID
+- ADMIN_IDS
+
+5) Agar kerak bo'lsa credentials.json qo'ying
+Google service account ishlatsangiz, credentials.json faylini project root'ga joylang.
+
+6) Tez sinov
+python smoke_test.py
+
+7) Botni qo'lda ishga tushirish
+python main.py
+
+8) Production uchun systemd tavsiya qilinadi
+
+Service fayl namunasi:
+
+[Unit]
+Description=AI Phone Recommender Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/AI_phone_recommender_bot
+ExecStart=/home/ubuntu/AI_phone_recommender_bot/.venv/bin/python /home/ubuntu/AI_phone_recommender_bot/main.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+
+9) Service'ni yoqing
+sudo systemctl daemon-reload
+sudo systemctl enable ai_phone_bot
+sudo systemctl start ai_phone_bot
+sudo systemctl status ai_phone_bot
+
+10) Loglarni ko'rish
+journalctl -u ai_phone_bot -f
+
+Eslatma:
+- Bu bot polling bilan ishlaydi.
+- Inbound port ochish shart emas.
+- Serverda internet chiqishi bo'lishi kerak.

@@ -57,7 +57,7 @@ def test_model_word_marks_text_as_phone_related() -> None:
 
 
 def main_test() -> None:
-    test_end_to_end_a51_query_matches_only_db_record()
+    test_end_to_end_a15_query_matches_only_db_record()
     test_extracts_concatenated_model_number()
     test_extracts_model_with_explicit_brand()
     test_does_not_treat_spec_values_as_model()

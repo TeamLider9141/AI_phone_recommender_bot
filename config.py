@@ -27,6 +27,9 @@ class Config:
     google_sheet_id: str
     google_credentials_path: str
     sheet_name: str            # ish varag'i (tab) nomi
+    phone_source: str = "sheet"  # "sheet" | "texnomart"
+    texnomart_base_url: str = "https://texnomart.uz/katalog/smartfony/"
+    texnomart_max_pages: int = 0
     admin_ids: list[int] = field(default_factory=list)
     cache_ttl: int = 300       # soniya
     gemini_model: str = "gemini-2.0-flash"
@@ -49,6 +52,12 @@ def load_config() -> Config:
         google_sheet_id=os.getenv("GOOGLE_SHEET_ID", "").strip(),
         google_credentials_path=os.getenv("GOOGLE_CREDENTIALS_PATH", "credentials.json").strip(),
         sheet_name=os.getenv("SHEET_NAME", "Sheet1").strip(),
+        phone_source=os.getenv("PHONE_SOURCE", "sheet").strip().lower(),
+        texnomart_base_url=os.getenv(
+            "TEXNOMART_BASE_URL",
+            "https://texnomart.uz/katalog/smartfony/",
+        ).strip(),
+        texnomart_max_pages=int(os.getenv("TEXNOMART_MAX_PAGES", "0")),
         admin_ids=_int_list(os.getenv("ADMIN_IDS")),
         cache_ttl=int(os.getenv("CACHE_TTL", "300")),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip(),

@@ -46,7 +46,17 @@ def settings_keyboard() -> InlineKeyboardMarkup:
     return b.as_markup()
 
 
-def results_keyboard(active: str | None = None) -> InlineKeyboardMarkup:
+def source_choice_keyboard() -> InlineKeyboardMarkup:
+    """Telefon qidiruvi uchun manba tanlash tugmalari."""
+    b = InlineKeyboardBuilder()
+    b.row(
+        InlineKeyboardButton(text="📚 Baza", callback_data="source:set:sheet"),
+        InlineKeyboardButton(text="🛒 Texnomart", callback_data="source:set:texnomart"),
+    )
+    return b.as_markup()
+
+
+def results_keyboard(active: str | None = None, include_source_reset: bool = False) -> InlineKeyboardMarkup:
     """So'rov natijasi ostidagi saralash tugmalari. active = belgilangan kalit."""
     b = InlineKeyboardBuilder()
     for key, label in SORT_LABELS.items():
@@ -54,4 +64,6 @@ def results_keyboard(active: str | None = None) -> InlineKeyboardMarkup:
         b.button(text=text, callback_data=f"sort:{key}")
     b.adjust(2)  # 2 ta ustun
     b.row(InlineKeyboardButton(text="🔟 Top 10 arzon", callback_data="top:price_asc"))
+    if include_source_reset:
+        b.row(InlineKeyboardButton(text="🔎 Boshqa bazadan izlash", callback_data="source:reset"))
     return b.as_markup()

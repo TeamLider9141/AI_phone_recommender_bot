@@ -19,6 +19,8 @@ class Phone:
     proc_tier: Optional[int] = None      # protsessor darajasi 1-100 (Sheet'da, ixtiyoriy)
     battery: Optional[int] = None        # mAh
     os: Optional[str] = None
+    detail_url: Optional[str] = None
+    source_label: Optional[str] = None    # "texno" yoki "baza"
     price: Optional[int] = None          # so'm yoki boshqa birlik
 
     def title(self) -> str:
@@ -29,6 +31,19 @@ class Phone:
             return model if model else brand
         parts = [p for p in (brand, model) if p]
         return " ".join(parts) if parts else "Noma'lum telefon"
+
+    def resolved_source_label(self) -> str:
+        """Manba yorlig'ini qaytaradi: explicit label bo'lsa shuni, aks holda URL'dan taxmin qiladi."""
+        label = (self.source_label or "").strip().lower()
+        if label in {"texno", "texnomart", "texnomart.uz"}:
+            return "texno"
+        if label in {"baza", "base", "database", "db"}:
+            return "baza"
+        if label:
+            return label
+        if self.detail_url and "texnomart.uz" in self.detail_url.lower():
+            return "texno"
+        return "baza"
 
     def short_spec(self) -> str:
         """Telegram javobi uchun qisqa, o'qiladigan spetsifikatsiya satri."""

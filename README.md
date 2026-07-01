@@ -25,6 +25,7 @@ ham ishlayveradi.
 | `main.py` | Telegram bot (buyruqlar, kunlik limit, matn handlerlari) |
 | `ai.py` | Gemini: so'rovni filtrga aylantirish + javob yozish |
 | `sheets.py` | Google Sheet'dan baza o'qish + cache (CSV fallback) |
+| `texnomart_scraper.py` | Texnomart katalogidan live scraping |
 | `recommender.py` | Qattiq filter + yumshoq saralash |
 | `models.py` | `Phone`, `QueryFilter` strukturalari |
 | `config.py` | `.env` sozlamalari |
@@ -56,9 +57,27 @@ pip install -r requirements.txt
 
 **Sheet ustunlari** (1-qator = sarlavha):
 ```
-brand | model | ram | storage | color | camera_front | camera_back | processor | proc_tier | battery | os | price
+brand | model | ram | storage | color | camera_front | camera_back | processor | proc_tier | battery | os | price | detail_url | source_label
 ```
 (`sample_data.csv` aynan shu tartibda — namuna sifatida ko'chiring.)
+
+Agar Texnomart detail havolalarini ham ko'rsatmoqchi bo'lsangiz, ixtiyoriy
+`detail_url` va `source_label` ustunlarini qo'shishingiz mumkin. `source_label`
+uchun `texno` yoki `baza` qiymatlari ishlatiladi.
+
+## Manba tanlash
+
+Bot endi har bir so'rov uchun avval qaysi manbadan qidirishni so'raydi:
+
+- `📚 Baza`
+- `🛒 Texnomart`
+
+Foydalanuvchi birini tanlagach, keyingi so'rovlar shu manbada ishlaydi.
+Natija ostidagi `🔎 Boshqa bazadan izlash` tugmasi esa tanlovni qayta ochadi.
+
+`TEXNOMART_BASE_URL` va `TEXNOMART_MAX_PAGES` Texnomart scraper sozlamalari
+uchun qoladi. `PHONE_SOURCE` odatda `sheet` bo'lib qoladi va faqat
+texnik fallback/default sifatida ishlaydi.
 
 > Eslatma: agar `credentials.json` bo'lmasa, bot public share qilingan Sheet'ni
 > authsiz o'qishga urinadi. Bu faqat Sheet haqiqatan ham viewer/public bo'lsa ishlaydi.
@@ -70,6 +89,7 @@ qoldirsangiz bot chipset nomidan taxminiy ball hisoblaydi.
 ```bash
 cp .env.example .env
 # .env ni to'ldiring: TELEGRAM_BOT_TOKEN, GEMINI_API_KEY, GOOGLE_SHEET_ID, ADMIN_IDS
+# Texnomart scraper sozlamalari uchun: TEXNOMART_BASE_URL, TEXNOMART_MAX_PAGES
 ```
 
 ### 6. Ishga tushirish
@@ -88,7 +108,7 @@ python smoke_test.py
 ## Buyruqlar
 - `/start` — botni boshlash va asosiy tugmalarni ko'rsatish
 - `/help` — qisqa qo'llanma
-- `/clear` — foydalanuvchining oxirgi tavsiya xabarlarini tozalash
+- `/clear` — foydalanuvchining oxirgi tavsiya xabarlarini va source tanlovini tozalash
 - `/reload` — bazani majburiy yangilash (faqat `ADMIN_IDS`)
 - `/settings` — kunlik limitni tugmalar orqali o'zgartirish (faqat `ADMIN_IDS`)
 - Oddiy matn — telefon tavsiyasi

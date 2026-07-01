@@ -41,7 +41,7 @@ def main() -> None:
         if f.price_target:
             print(f"  Band: {int(f.price_target*0.6):,}".replace(",", " ")
                   + f" - {int(f.price_target*1.4):,}".replace(",", " ") + " oralig'i")
-        print(ai.simple_reply(top))
+        print(ai.append_source_block(ai.simple_reply(top), top))
 
     section("Tugma simulyatsiyasi: '5 mln atrofida Samsung' -> har xil tugma")
     from dataclasses import replace

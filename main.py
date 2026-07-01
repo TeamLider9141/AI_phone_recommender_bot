@@ -28,6 +28,19 @@ USER_FILTERS: dict[int, QueryFilter] = {}
 # /clear uchun bot yuborgan oxirgi tavsiya xabarlari.
 USER_RESULT_MESSAGES: dict[int, list[int]] = {}
 
+# Tanlangan manba (chat_id -> "sheet" | "texnomart").
+USER_SELECTED_SOURCES: dict[int, str] = {}
+
+# Hozirgi va oxirgi so'rovlar: source tanlash va reset oqimi uchun.
+@dataclass
+class PendingSearch:
+    text: str
+    parsed_filter: QueryFilter
+
+
+USER_PENDING_SEARCHES: dict[int, PendingSearch] = {}
+USER_LAST_SEARCHES: dict[int, PendingSearch] = {}
+
 # Rate limit: har chat_id uchun so'rov vaqtlari (scraping/abuse'ga qarshi).
 _RATE: dict[int, list[float]] = defaultdict(list)
 
@@ -60,6 +73,11 @@ logger = logging.getLogger("bot")
 RATE_MSG = "⏳ Juda ko'p so'rov yubordingiz. Iltimos birozdan keyin urinib ko'ring."
 DUMP_NOTE = f"\n\n🔒 <i>Xavfsizlik uchun faqat eng mos {config.max_results} tasi ko'rsatiladi.</i>"
 STARTUP_TITLE = "Bot ishlayapti"
+SOURCE_PROMPT_TEXT = "Qaysi bazadan telefonlar haqida ma'lumot beraylik?"
+SOURCE_LABELS = {
+    "sheet": "📚 Baza",
+    "texnomart": "🛒 Texnomart",
+}
 
 
 def _check_rate(chat_id: int) -> bool:
@@ -71,6 +89,26 @@ def _check_rate(chat_id: int) -> bool:
         return False
     times.append(now)
     return True
+
+
+def _source_choice_label(source: str | None) -> str:
+    return SOURCE_LABELS.get(source or "", "📚 Baza")
+
+
+def _callback_chat_id(query: CallbackQuery) -> int | None:
+    message = query.message
+    chat = getattr(message, "chat", None)
+    if chat is not None:
+        chat_id = getattr(chat, "id", None)
+        if chat_id is not None:
+            return chat_id
+    if query.from_user and query.from_user.id is not None:
+        return query.from_user.id
+    return None
+
+
+def _callback_message_id(query: CallbackQuery) -> int | None:
+    return getattr(query.message, "message_id", None) if query.message is not None else None
 
 
 def is_admin(user_id: int | None) -> bool:
@@ -162,6 +200,7 @@ def _menu_for(message: Message) -> object:
 WELCOME = (
     "Assalomu alaykum! 👋\n\n"
     "Men telefon tanlashda yordam beraman. Sizga kerakli telefonni oddiy tilda yozing.\n\n"
+    "Avval sizdan qaysi manbadan qidirishni so'rayman: <b>Baza</b> yoki <b>Texnomart</b>.\n\n"
     "Masalan:\n"
     "• <i>12 GB ramli, kuchli kamerali, 5 mln gacha Samsung kerak</i>\n"
     "• <i>arzon Xiaomi, katta batareyka</i>\n"
@@ -175,6 +214,8 @@ HELP_TEXT = (
     "/help — qisqa qo'llanma\n"
     "/clear — oxirgi tavsiyalarni tozalash\n"
     "/reload — bazani yangilash (faqat admin)\n\n"
+    "Telefon qidirganda bot avval qaysi bazadan foydalanishni so'raydi.\n"
+    "Natija tagida \"boshqa bazadan izlash\" tugmasi ham bor.\n\n"
     "Oddiy foydalanuvchilar uchun kunlik so'rov limiti UTC+5 bo'yicha hisoblanadi.\n\n"
     "Telefon qidirish uchun oddiy yozing:\n"
     "<i>5 mln gacha Samsung</i>\n"
@@ -221,21 +262,23 @@ def _remember_result_message(chat_id: int, message_id: int) -> None:
 async def _process(
     text: str,
     parsed_filter: QueryFilter | None = None,
+    source: str | None = None,
 ) -> tuple[str, QueryFilter, bool]:
     """So'rovni qayta ishlaydi. Return: (javob matni, filtr, natija_bormi).
     natija_bormi=False bo'lsa tugmalar ko'rsatilmaydi (topilmadi/bo'sh holat)."""
     def work() -> tuple[str, QueryFilter, bool]:
-        phones = sheets.get_phones()
+        phones = sheets.get_phones(source=source)
         f = parsed_filter or ai.parse_query(text)
         if not phones:
             return "Baza hozircha bo'sh yoki yuklanmadi. Administrator bilan bog'laning.", f, False
         # So'ralgan brend bazada umuman yo'q bo'lsa — aniq "topilmadi".
-        if f.brand and f.brand.lower() not in sheets.known_brands():
+        if f.brand and f.brand.lower() not in sheets.known_brands(source=source):
             return ai.NOT_FOUND, f, False
         top, relaxed = recommend(phones, f, limit=5)
         if not top:
             return ai.NOT_FOUND, f, False
         reply = ai.format_reply(top, f)
+        source_phones = top
         if relaxed:
             has_price = bool(f.price_max or f.price_min or f.price_target)
             if has_price:
@@ -250,25 +293,28 @@ async def _process(
                 label = ("💰 Bizdagi eng qimmat telefonlar:" if wants_exp
                          else "💰 Bizdagi eng arzon telefonlar:")
                 reply = note + "\n\n" + ai.simple_reply(alt_top or top, label)
+                source_phones = alt_top or top
                 f = alt_f
             else:
                 reply += RELAX_NOTE
         if ai.is_dump_request(text):
             reply += DUMP_NOTE
+        reply = ai.append_source_block(reply, source_phones)
         return reply, f, True
 
     return await asyncio.to_thread(work)
 
 
-async def _resort(f: QueryFilter) -> str:
+async def _resort(f: QueryFilter, source: str | None = None) -> str:
     """Tugma bosilganda: saqlangan filtrni qayta saralash (tez, Gemini'siz)."""
     def work() -> str:
-        phones = sheets.get_phones()
+        phones = sheets.get_phones(source=source)
         top, relaxed = recommend(phones, f, limit=f.limit or 5)
         title = SORT_LABELS.get(f.sort_by or "", "📱 Natijalar") + ":"
         reply = ai.simple_reply(top, title)
         if relaxed and top:
             reply += RELAX_NOTE
+        reply = ai.append_source_block(reply, top)
         return reply
 
     return await asyncio.to_thread(work)
@@ -291,6 +337,9 @@ async def cmd_clear(message: Message) -> None:
         except Exception:  # noqa: BLE001
             logger.debug("Tavsiya xabarini o'chirib bo'lmadi: chat=%s message=%s", chat_id, message_id)
     USER_FILTERS.pop(chat_id, None)
+    USER_SELECTED_SOURCES.pop(chat_id, None)
+    USER_PENDING_SEARCHES.pop(chat_id, None)
+    USER_LAST_SEARCHES.pop(chat_id, None)
     _RATE.pop(chat_id, None)
     await message.answer("Tavsiyalar tozalandi. Yangi so'rov yuborishingiz mumkin.", reply_markup=_menu_for(message))
 
@@ -330,12 +379,22 @@ async def on_text(message: Message) -> None:
                 text = off_topic_warning_text(RUNTIME_SETTINGS.off_topic_block_minutes)
                 await message.answer(text, reply_markup=_menu_for(message))
             return
+        chat_id = message.chat.id
+        pending = PendingSearch(text=message.text, parsed_filter=parsed_filter)
+        USER_PENDING_SEARCHES[chat_id] = pending
+        USER_LAST_SEARCHES[chat_id] = pending
+
+        selected_source = USER_SELECTED_SOURCES.get(chat_id)
+        if not selected_source:
+            await message.answer(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
+            return
+
         if not check_daily_limit(user_id):
             await message.answer(daily_limit_message(), reply_markup=_menu_for(message))
             return
 
         await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
-        reply, f, has_results = await _process(message.text, parsed_filter)
+        reply, f, has_results = await _process(message.text, parsed_filter, source=selected_source)
     except Exception:  # noqa: BLE001
         logger.exception("So'rovni qayta ishlashda xato")
         await message.answer(
@@ -345,13 +404,90 @@ async def on_text(message: Message) -> None:
         return
 
     if not has_results:
-        await message.answer(reply, reply_markup=_menu_for(message))  # topilmadi — saralash tugmalarisiz
+        await message.answer(reply, reply_markup=keyboards.source_choice_keyboard())
         return
 
     USER_FILTERS[message.chat.id] = f
+    USER_PENDING_SEARCHES.pop(message.chat.id, None)
     active = f.sort_by or ("price_near" if f.price_target else None)
-    sent = await message.answer(reply, reply_markup=keyboards.results_keyboard(active=active))
+    sent = await message.answer(
+        reply,
+        reply_markup=keyboards.results_keyboard(active=active, include_source_reset=True),
+    )
     _remember_result_message(message.chat.id, sent.message_id)
+
+
+async def on_source_choice(query: CallbackQuery) -> None:
+    data = query.data or ""
+    chat_id = _callback_chat_id(query)
+    if chat_id is None:
+        await query.answer()
+        return
+
+    if data == "source:reset":
+        USER_SELECTED_SOURCES.pop(chat_id, None)
+        USER_FILTERS.pop(chat_id, None)
+        last_search = USER_LAST_SEARCHES.get(chat_id)
+        if last_search is not None:
+            USER_PENDING_SEARCHES[chat_id] = last_search
+        else:
+            USER_PENDING_SEARCHES.pop(chat_id, None)
+        await query.answer()
+        if query.message is not None:
+            await query.message.edit_text(SOURCE_PROMPT_TEXT, reply_markup=keyboards.source_choice_keyboard())
+        return
+
+    parts = data.split(":")
+    if len(parts) != 3 or parts[0] != "source" or parts[1] != "set":
+        await query.answer()
+        return
+
+    source = sheets.resolve_source(parts[2])
+    USER_SELECTED_SOURCES[chat_id] = source
+    pending = USER_PENDING_SEARCHES.get(chat_id)
+    if pending is None:
+        await query.answer()
+        if query.message is not None:
+            await query.message.edit_text(
+                f"✅ {_source_choice_label(source)} tanlandi. Endi so'rov yozing.",
+                reply_markup=keyboards.source_choice_keyboard(),
+            )
+        return
+
+    USER_LAST_SEARCHES[chat_id] = pending
+    user_id = query.from_user.id if query.from_user else chat_id
+    if not check_daily_limit(user_id):
+        await query.answer(daily_limit_message(), show_alert=True)
+        return
+
+    try:
+        reply, f, has_results = await _process(pending.text, pending.parsed_filter, source=source)
+    except Exception:  # noqa: BLE001
+        logger.exception("Source tanlashdagi so'rovni qayta ishlashda xato")
+        await query.answer("Kechirasiz, xatolik yuz berdi. Birozdan keyin urinib ko'ring.", show_alert=True)
+        return
+
+    await query.answer()
+    if query.message is None:
+        if has_results:
+            USER_FILTERS[chat_id] = f
+            USER_PENDING_SEARCHES.pop(chat_id, None)
+        return
+
+    if not has_results:
+        await query.message.edit_text(reply, reply_markup=keyboards.source_choice_keyboard())
+        return
+
+    USER_FILTERS[chat_id] = f
+    USER_PENDING_SEARCHES.pop(chat_id, None)
+    active = f.sort_by or ("price_near" if f.price_target else None)
+    await query.message.edit_text(
+        reply,
+        reply_markup=keyboards.results_keyboard(active=active, include_source_reset=True),
+    )
+    message_id = _callback_message_id(query)
+    if message_id is not None:
+        _remember_result_message(chat_id, message_id)
 
 
 async def on_settings(query: CallbackQuery) -> None:
@@ -385,24 +521,34 @@ async def on_settings(query: CallbackQuery) -> None:
 
 async def on_sort(query: CallbackQuery) -> None:
     """Saralash tugmasi bosilganda: oldingi filtrni saqlab, faqat tartibni o'zgartirish."""
-    if not _check_rate(query.message.chat.id):
+    chat_id = _callback_chat_id(query)
+    if chat_id is None or query.message is None:
+        await query.answer()
+        return
+    if not _check_rate(chat_id):
         await query.answer(RATE_MSG, show_alert=True)
         return
     await query.answer()
     data = query.data or ""
     prefix, _, key = data.partition(":")
-    base = USER_FILTERS.get(query.message.chat.id)
+    base = USER_FILTERS.get(chat_id)
     if base is None:
-        await query.message.answer("Avval kerakli telefonni yozib qidiring 🔎")
+        if hasattr(query.message, "answer"):
+            await query.message.answer("Avval kerakli telefonni yozib qidiring 🔎")
+        else:
+            await query.answer("Avval kerakli telefonni yozib qidiring 🔎", show_alert=True)
         return
 
     new_limit = 10 if prefix == "top" else (base.limit or 5)
     f = replace(base, sort_by=key, limit=new_limit)
-    USER_FILTERS[query.message.chat.id] = f
+    USER_FILTERS[chat_id] = f
 
-    reply = await _resort(f)
+    reply = await _resort(f, source=USER_SELECTED_SOURCES.get(chat_id))
     try:
-        await query.message.edit_text(reply, reply_markup=keyboards.results_keyboard(active=key))
+        await query.message.edit_text(
+            reply,
+            reply_markup=keyboards.results_keyboard(active=key, include_source_reset=True),
+        )
     except Exception:  # noqa: BLE001 — matn o'zgarmasa Telegram xato beradi, e'tibor bermaymiz
         pass
 
@@ -418,6 +564,7 @@ def build_dispatcher() -> Dispatcher:
     dp.message.register(cmd_reload, Command("reload"))
     dp.message.register(cmd_settings, Command("settings"))
     dp.message.register(on_text, F.text)
+    dp.callback_query.register(on_source_choice, F.data.startswith("source:"))
     dp.callback_query.register(on_settings, F.data.startswith("settings:"))
     dp.callback_query.register(on_sort, F.data.startswith(("sort:", "top:")))
     return dp

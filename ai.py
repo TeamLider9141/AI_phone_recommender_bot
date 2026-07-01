@@ -7,6 +7,7 @@ SDK: google-genai (yangi, google.generativeai deprecated).
 """
 from __future__ import annotations
 
+import html
 import json
 import logging
 import re
@@ -326,6 +327,7 @@ def _phone_dict(p: Phone) -> dict:
         "brand": p.brand, "model": p.model, "ram": p.ram, "storage": p.storage,
         "camera_back": p.camera_back, "battery": p.battery, "os": p.os,
         "color": p.color, "price": p.price, "processor": p.processor,
+        "detail_url": p.detail_url, "source_label": p.resolved_source_label(),
     }
 
 
@@ -341,6 +343,33 @@ def _template_reply(phones: list[Phone], title: str = "📱 Sizga mos telefonlar
     for i, p in enumerate(phones, 1):
         lines.append(f"{i}. <b>{p.title()}</b>\n{p.short_spec()}\n")
     return "\n".join(lines).strip()
+
+
+def _source_link_html(p: Phone) -> str:
+    """Har bir telefon uchun bosiladigan manba yorlig'i."""
+    label = html.escape(p.resolved_source_label())
+    url = (p.detail_url or "").strip()
+    if url:
+        return f'<a href="{html.escape(url, quote=True)}">{label}</a>'
+    return label
+
+
+def source_block(phones: list[Phone]) -> str:
+    """Manbalar bo'limi: texno bo'lsa link, baza bo'lsa oddiy label."""
+    if not phones:
+        return ""
+    lines = [f"{i}. {_source_link_html(p)}" for i, p in enumerate(phones, 1)]
+    return "<b>Manbalar:</b>\n" + "\n".join(lines)
+
+
+def append_source_block(text: str, phones: list[Phone]) -> str:
+    """Tavsiya matniga manbalar blokini qo'shadi."""
+    block = source_block(phones)
+    if not block:
+        return text
+    if not text:
+        return block
+    return f"{text}\n\n{block}"
 
 
 NOT_FOUND = (

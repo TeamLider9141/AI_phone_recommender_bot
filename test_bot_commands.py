@@ -7,9 +7,10 @@ from __future__ import annotations
 import asyncio
 from datetime import date
 
+import ai
 import keyboards
 import main
-from models import QueryFilter
+from models import Phone, QueryFilter
 
 
 class FakeChat:
@@ -55,6 +56,146 @@ def test_admin_menu_has_settings_button() -> None:
 
     assert "/settings" in admin_buttons
     assert "/settings" not in user_buttons
+
+
+def test_phone_resolves_source_label() -> None:
+    assert Phone(detail_url="https://texnomart.uz/product/detail/357642/").resolved_source_label() == "texno"
+    assert Phone().resolved_source_label() == "baza"
+    assert Phone(source_label="Texnomart").resolved_source_label() == "texno"
+
+
+def test_source_block_renders_clickable_texno_link() -> None:
+    phones = [
+        Phone(
+            brand="Samsung",
+            model="Galaxy A06",
+            detail_url="https://texnomart.uz/product/detail/357642/",
+        ),
+        Phone(brand="Xiaomi", model="Redmi 13"),
+    ]
+
+    reply = ai.append_source_block("Natija", phones)
+
+    assert '<a href="https://texnomart.uz/product/detail/357642/">texno</a>' in reply
+    assert "2. baza" in reply
+
+
+def test_source_choice_keyboard_has_two_sources() -> None:
+    markup = keyboards.source_choice_keyboard()
+    button_texts = [button.text for row in markup.inline_keyboard for button in row]
+
+    assert "📚 Baza" in button_texts
+    assert "🛒 Texnomart" in button_texts
+
+
+def test_results_keyboard_has_source_reset_button() -> None:
+    markup = keyboards.results_keyboard(include_source_reset=True)
+    button_texts = [button.text for row in markup.inline_keyboard for button in row]
+
+    assert "🔎 Boshqa bazadan izlash" in button_texts
+
+
+async def test_on_text_prompts_for_source_when_none_selected() -> None:
+    old_selected = dict(main.USER_SELECTED_SOURCES)
+    old_pending = dict(main.USER_PENDING_SEARCHES)
+    old_last = dict(main.USER_LAST_SEARCHES)
+    old_parse = main.ai.parse_query
+    old_to_thread = main.asyncio.to_thread
+
+    async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
+        return func(*args, **kwargs)
+
+    main.USER_SELECTED_SOURCES.clear()
+    main.USER_PENDING_SEARCHES.clear()
+    main.ai.parse_query = lambda text: QueryFilter(is_phone_related=True, brand="Samsung")
+    main.asyncio.to_thread = inline_to_thread
+
+    try:
+        msg = FakeMessage()
+        msg.text = "Samsung kerak"
+
+        await main.on_text(msg)
+
+        assert msg.answers
+        text, markup = msg.answers[0]
+        assert "qaysi bazadan" in text.lower()
+        assert markup is not None
+        assert msg.chat.id in main.USER_PENDING_SEARCHES
+    finally:
+        main.USER_SELECTED_SOURCES.clear()
+        main.USER_SELECTED_SOURCES.update(old_selected)
+        main.USER_PENDING_SEARCHES.clear()
+        main.USER_PENDING_SEARCHES.update(old_pending)
+        main.USER_LAST_SEARCHES.clear()
+        main.USER_LAST_SEARCHES.update(old_last)
+        main.ai.parse_query = old_parse
+        main.asyncio.to_thread = old_to_thread
+
+
+async def test_on_source_choice_remembers_selection_and_uses_pending_query() -> None:
+    old_filters = dict(main.USER_FILTERS)
+    old_selected = dict(main.USER_SELECTED_SOURCES)
+    old_pending = dict(main.USER_PENDING_SEARCHES)
+    old_last = dict(main.USER_LAST_SEARCHES)
+    old_process = main._process
+
+    async def fake_process(text, parsed_filter=None, source=None):  # noqa: ANN001
+        return ("SOURCE OK", parsed_filter or QueryFilter(), True)
+
+    main.USER_SELECTED_SOURCES.clear()
+    main.USER_PENDING_SEARCHES.clear()
+    main.USER_PENDING_SEARCHES[12345] = main.PendingSearch(
+        text="Samsung kerak",
+        parsed_filter=QueryFilter(is_phone_related=True, brand="Samsung"),
+    )
+    main._process = fake_process
+
+    try:
+        query = FakeCallbackQuery("source:set:texnomart", user_id=12345)
+        await main.on_source_choice(query)
+
+        assert main.USER_SELECTED_SOURCES[12345] == "texnomart"
+        assert 12345 not in main.USER_PENDING_SEARCHES
+        assert query.message.edits
+        assert "SOURCE OK" in query.message.edits[0][0]
+    finally:
+        main.USER_FILTERS.clear()
+        main.USER_FILTERS.update(old_filters)
+        main.USER_SELECTED_SOURCES.clear()
+        main.USER_SELECTED_SOURCES.update(old_selected)
+        main.USER_PENDING_SEARCHES.clear()
+        main.USER_PENDING_SEARCHES.update(old_pending)
+        main.USER_LAST_SEARCHES.clear()
+        main.USER_LAST_SEARCHES.update(old_last)
+        main._process = old_process
+
+
+async def test_reset_source_choice_clears_selection_and_reprompts() -> None:
+    old_filters = dict(main.USER_FILTERS)
+    old_selected = dict(main.USER_SELECTED_SOURCES)
+    old_pending = dict(main.USER_PENDING_SEARCHES)
+    old_last = dict(main.USER_LAST_SEARCHES)
+
+    main.USER_SELECTED_SOURCES.clear()
+    main.USER_PENDING_SEARCHES.clear()
+    main.USER_SELECTED_SOURCES[12345] = "texnomart"
+
+    try:
+        query = FakeCallbackQuery("source:reset", user_id=12345)
+        await main.on_source_choice(query)
+
+        assert 12345 not in main.USER_SELECTED_SOURCES
+        assert query.message.edits
+        assert "qaysi bazadan" in query.message.edits[0][0].lower()
+    finally:
+        main.USER_FILTERS.clear()
+        main.USER_FILTERS.update(old_filters)
+        main.USER_SELECTED_SOURCES.clear()
+        main.USER_SELECTED_SOURCES.update(old_selected)
+        main.USER_PENDING_SEARCHES.clear()
+        main.USER_PENDING_SEARCHES.update(old_pending)
+        main.USER_LAST_SEARCHES.clear()
+        main.USER_LAST_SEARCHES.update(old_last)
 
 
 def test_daily_limit_for_non_admin_only() -> None:
@@ -184,31 +325,69 @@ async def test_on_settings_rejects_non_admin() -> None:
 
 async def test_clear_command() -> None:
     msg = FakeMessage()
+    old_filters = dict(main.USER_FILTERS)
+    old_results = {chat_id: list(message_ids) for chat_id, message_ids in main.USER_RESULT_MESSAGES.items()}
+    old_selected = dict(main.USER_SELECTED_SOURCES)
+    old_pending = dict(main.USER_PENDING_SEARCHES)
+    old_last = dict(main.USER_LAST_SEARCHES)
+    old_rate = {chat_id: list(times) for chat_id, times in main._RATE.items()}
     main.USER_FILTERS[msg.chat.id] = QueryFilter(brand="Samsung")
     main.USER_RESULT_MESSAGES[msg.chat.id] = [101, 102]
+    main.USER_SELECTED_SOURCES[msg.chat.id] = "texnomart"
+    main.USER_PENDING_SEARCHES[msg.chat.id] = main.PendingSearch(
+        text="Samsung kerak",
+        parsed_filter=QueryFilter(brand="Samsung"),
+    )
+    main.USER_LAST_SEARCHES[msg.chat.id] = main.PendingSearch(
+        text="Samsung kerak",
+        parsed_filter=QueryFilter(brand="Samsung"),
+    )
     main._RATE[msg.chat.id] = [1.0, 2.0]
 
     await main.cmd_clear(msg)
 
     assert msg.chat.id not in main.USER_FILTERS
     assert msg.chat.id not in main.USER_RESULT_MESSAGES
+    assert msg.chat.id not in main.USER_SELECTED_SOURCES
+    assert msg.chat.id not in main.USER_PENDING_SEARCHES
+    assert msg.chat.id not in main.USER_LAST_SEARCHES
     assert msg.chat.id not in main._RATE
     assert msg.bot.deleted == [(msg.chat.id, 101), (msg.chat.id, 102)]
     assert msg.answers
     assert "tozalandi" in msg.answers[0][0].lower()
     assert msg.answers[0][1] is not None
 
+    main.USER_FILTERS.clear()
+    main.USER_FILTERS.update(old_filters)
+    main.USER_RESULT_MESSAGES.clear()
+    main.USER_RESULT_MESSAGES.update(old_results)
+    main.USER_SELECTED_SOURCES.clear()
+    main.USER_SELECTED_SOURCES.update(old_selected)
+    main.USER_PENDING_SEARCHES.clear()
+    main.USER_PENDING_SEARCHES.update(old_pending)
+    main.USER_LAST_SEARCHES.clear()
+    main.USER_LAST_SEARCHES.update(old_last)
+    main._RATE.clear()
+    main._RATE.update(old_rate)
+
 
 def main_test() -> None:
     test_bot_commands()
     test_startup_status_text()
     test_admin_menu_has_settings_button()
+    test_phone_resolves_source_label()
+    test_source_block_renders_clickable_texno_link()
+    test_source_choice_keyboard_has_two_sources()
+    test_results_keyboard_has_source_reset_button()
     test_daily_limit_for_non_admin_only()
     test_daily_limit_settings_text()
     test_update_daily_limit_from_settings_action()
     test_settings_keyboard_has_off_topic_controls()
     test_settings_text_shows_off_topic_config()
     test_update_off_topic_settings_reconfigures_guard()
+    asyncio.run(test_on_text_prompts_for_source_when_none_selected())
+    asyncio.run(test_on_source_choice_remembers_selection_and_uses_pending_query())
+    asyncio.run(test_reset_source_choice_clears_selection_and_reprompts())
     asyncio.run(test_on_settings_dispatches_blockmin_field())
     asyncio.run(test_on_settings_rejects_non_admin())
     asyncio.run(test_clear_command())
