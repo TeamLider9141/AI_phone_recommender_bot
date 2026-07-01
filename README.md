@@ -2,6 +2,9 @@
 
 [![Klonlar soni](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/TeamLider9141/AI_phone_recommender_bot/main/.github/badges/clone-count.json)](https://github.com/TeamLider9141/AI_phone_recommender_bot)
 
+<!-- CLONE_CHART:START -->
+<!-- CLONE_CHART:END -->
+
 Foydalanuvchi oddiy o'zbek tilida yozadi — bot Google Sheet'dagi bazadan eng mos
 telefonlarni topib, izoh bilan tavsiya qiladi.
 
@@ -196,19 +199,25 @@ So'rovning o'zida ham ishlaydi: «eng arzon 10 ta», «protsessor bo'yicha»,
 Protsessor saralashi chipset nomidan taxminiy tier balini hisoblaydi
 ([recommender.py](core/recommender.py) `_PROC_SCORES`) — yangi chipsetlarni shu jadvalga qo'shing.
 
-## Klonlar soni (README'dagi badge)
+## Klonlar soni va grafigi
 
-Yuqoridagi "Klonlar soni" belgisi vaqt o'tishi bilan **o'sib boradi** — GitHub'ning
-o'zi `git clone`/"Download ZIP" statistikasini (Insights → Traffic → Git clones)
-faqat oxirgi 14 kun uchun saqlaydi, shuning uchun uni yo'qotmasdan yig'ib
-borish kerak:
+Sarlavha ostidagi raqamli belgi va o'sish grafigi vaqt o'tishi bilan **o'sib
+boradi** — GitHub'ning o'zi `git clone`/"Download ZIP" statistikasini
+(Insights → Traffic → Git clones) faqat oxirgi 14 kun uchun saqlaydi, shuning
+uchun uni yo'qotmasdan yig'ib borish kerak:
 
-- [`.github/workflows/clone-count.yml`](.github/workflows/clone-count.yml) har kuni
-  (UTC 03:00) avtomatik ishga tushadi, GitHub Traffic API'dan yangi kunlar
-  sonini o'qib, umumiy hisobga qo'shadi va natijani
-  [`.github/badges/clone-count.json`](.github/badges/clone-count.json) fayliga yozib commit qiladi.
-- README'dagi badge shu JSON faylni shields.io "endpoint" formatida ko'rsatadi
-  — repo qanchalik ko'p klonlansa, son shunchalik o'sib boradi.
+- [`.github/workflows/clone-count.yml`](.github/workflows/clone-count.yml) har
+  kuni (UTC 03:00) avtomatik ishga tushadi va
+  [`.github/scripts/update_clone_stats.py`](.github/scripts/update_clone_stats.py)
+  skriptini chaqiradi: GitHub Traffic API'dan yangi (hali hisoblanmagan) kunlar
+  sonini o'qiydi, umumiy songa qo'shadi va oxirgi 60 kunlik tarixni
+  [`.github/badges/clone-state.json`](.github/badges/clone-state.json) fayliga saqlaydi.
+- Raqamli belgi: [`.github/badges/clone-count.json`](.github/badges/clone-count.json)
+  ni shields.io "endpoint" formatida ko'rsatadi.
+- O'sish grafigi: tarix asosida [QuickChart](https://quickchart.io) orqali
+  chiziq grafigi generatsiya qilinadi va README'dagi
+  `<!-- CLONE_CHART:START -->...<!-- CLONE_CHART:END -->` bloki ichiga
+  avtomatik yoziladi — har kunlik yangilanishda rasm ham yangilanadi.
 
 **Bir martalik sozlash (faqat repo egasi qila oladi):**
 1. github.com/settings/tokens → **Generate new token (classic)** → `repo` scope
