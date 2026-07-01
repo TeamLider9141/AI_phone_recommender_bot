@@ -1,4 +1,11 @@
 {
   "total": 88,
-  "lastDate": "2026-06-30"
+  "lastDate": "2026-06-30",
+  "history": [
+    {
+      "date": "2026-06-30",
+      "daily": 0,
+      "cumulative": 88
+    }
+  ]
 }

@@ -45,17 +45,36 @@ def load_state() -> dict:
 def update_state(state: dict, traffic: dict) -> dict:
     last_date = state.get("lastDate", "1970-01-01")
     total = state.get("total", 0)
-    history_by_date = {row["date"]: row for row in state.get("history", [])}
-    new_last_date = last_date
-
+    clones_by_date: dict[str, int] = {}
     for entry in traffic.get("clones", []):
         day = entry["timestamp"][:10]
-        count = entry["count"]
+        clones_by_date[day] = clones_by_date.get(day, 0) + int(entry["count"])
+
+    history = state.get("history", [])
+    history_by_date = {row["date"]: row for row in history}
+    if not history_by_date and clones_by_date:
+        old_days = [day for day in sorted(clones_by_date) if day <= last_date]
+        running_total = total - sum(clones_by_date[day] for day in old_days)
+        for day in old_days:
+            running_total += clones_by_date[day]
+            history_by_date[day] = {
+                "date": day,
+                "daily": clones_by_date[day],
+                "cumulative": running_total,
+            }
+
+    new_last_date = last_date
+
+    for day in sorted(clones_by_date):
+        count = clones_by_date[day]
         if day > last_date:
             total += count
             history_by_date[day] = {"date": day, "daily": count, "cumulative": total}
             if day > new_last_date:
                 new_last_date = day
+
+    if not history_by_date and total > 0 and last_date != "1970-01-01":
+        history_by_date[last_date] = {"date": last_date, "daily": 0, "cumulative": total}
 
     history = [history_by_date[d] for d in sorted(history_by_date)][-HISTORY_LIMIT:]
     return {"total": total, "lastDate": new_last_date, "history": history}
@@ -66,6 +85,7 @@ def write_badge(total: int) -> None:
         json.dumps(
             {"schemaVersion": 1, "label": "clones", "message": str(total), "color": "blue"},
             ensure_ascii=False,
+            indent=2,
         )
         + "\n",
         encoding="utf-8",
