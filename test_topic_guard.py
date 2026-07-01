@@ -81,6 +81,43 @@ def test_expired_first_strike_starts_new_warning() -> None:
     assert guard.is_blocked(7, now=3700.0) is False
 
 
+def test_configurable_max_attempts_and_block_minutes() -> None:
+    guard = OffTopicGuard(window_seconds=1800, block_seconds=1800, max_attempts=3)
+
+    assert guard.register_off_topic(1, now=0.0) == "warn"
+    assert guard.register_off_topic(1, now=1.0) == "warn"
+    assert guard.register_off_topic(1, now=2.0) == "blocked"
+    assert guard.is_blocked(1, now=1801.0) is True
+    assert guard.is_blocked(1, now=1802.0) is False
+
+
+def test_configure_updates_running_guard() -> None:
+    guard = OffTopicGuard(window_seconds=3600, block_seconds=3600, max_attempts=2)
+    guard.configure(window_seconds=60, block_seconds=60, max_attempts=1)
+
+    assert guard.register_off_topic(9, now=0.0) == "blocked"
+    assert guard.is_blocked(9, now=59.0) is True
+    assert guard.is_blocked(9, now=61.0) is False
+
+
+def test_settings_update_functions_reconfigure_guard() -> None:
+    main.OFF_TOPIC_GUARD.clear()
+    try:
+        assert main.update_off_topic_block_minutes("30") == 30
+        assert main.RUNTIME_SETTINGS.off_topic_block_minutes == 30
+        assert main.OFF_TOPIC_GUARD.block_seconds == 30 * 60
+        assert main.OFF_TOPIC_GUARD.window_seconds == 30 * 60
+
+        assert main.update_off_topic_max_attempts("+1") == 3
+        assert main.OFF_TOPIC_GUARD.max_attempts == 3
+
+        assert main.update_off_topic_max_attempts("-10") == 1  # 1 dan kam bo'lmaydi
+    finally:
+        main.update_off_topic_block_minutes(str(60))
+        main.update_off_topic_max_attempts(str(2))
+        main.OFF_TOPIC_GUARD.clear()
+
+
 async def test_silent_block_middleware_stops_updates() -> None:
     guard = OffTopicGuard()
     guard.register_off_topic(7, now=100.0)
@@ -119,7 +156,7 @@ async def test_off_topic_warning_then_silent_block_without_daily_usage() -> None
         await main.on_text(second)
 
         assert len(first.answers) == 1
-        assert "1 soat" in first.answers[0][0]
+        assert "60 daqiqa" in first.answers[0][0]
         assert second.answers == []
         assert main.OFF_TOPIC_GUARD.is_blocked(777)
         assert not any(key[0] == 777 for key in main.DAILY_USAGE)
@@ -137,6 +174,9 @@ def main_test() -> None:
     test_gemini_schema_requires_topic_classification()
     test_second_off_topic_inside_window_blocks_for_one_hour()
     test_expired_first_strike_starts_new_warning()
+    test_configurable_max_attempts_and_block_minutes()
+    test_configure_updates_running_guard()
+    test_settings_update_functions_reconfigure_guard()
     asyncio.run(test_silent_block_middleware_stops_updates())
     asyncio.run(test_off_topic_warning_then_silent_block_without_daily_usage())
     print("topic guard tests passed")

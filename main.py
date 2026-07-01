@@ -20,7 +20,7 @@ import sheets
 from config import config
 from models import QueryFilter, SORT_LABELS
 from recommender import recommend
-from topic_guard import OFF_TOPIC_WARNING, OffTopicGuard, SilentBlockMiddleware
+from topic_guard import OffTopicGuard, SilentBlockMiddleware, off_topic_warning_text
 
 # Foydalanuvchining oxirgi so'rov filtri (chat_id -> QueryFilter). Tugma bosilganda kerak.
 USER_FILTERS: dict[int, QueryFilter] = {}
@@ -38,11 +38,21 @@ UTC_PLUS_5 = timezone(timedelta(hours=5))
 @dataclass
 class RuntimeSettings:
     daily_limit: int
+    off_topic_block_minutes: int
+    off_topic_max_attempts: int
 
 
-RUNTIME_SETTINGS = RuntimeSettings(daily_limit=max(1, config.daily_limit))
+RUNTIME_SETTINGS = RuntimeSettings(
+    daily_limit=max(1, config.daily_limit),
+    off_topic_block_minutes=max(1, config.off_topic_block_minutes),
+    off_topic_max_attempts=max(1, config.off_topic_max_attempts),
+)
 DAILY_USAGE: dict[tuple[int, date], int] = defaultdict(int)
-OFF_TOPIC_GUARD = OffTopicGuard()
+OFF_TOPIC_GUARD = OffTopicGuard(
+    window_seconds=RUNTIME_SETTINGS.off_topic_block_minutes * 60,
+    block_seconds=RUNTIME_SETTINGS.off_topic_block_minutes * 60,
+    max_attempts=RUNTIME_SETTINGS.off_topic_max_attempts,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("bot")
@@ -96,27 +106,44 @@ def check_daily_limit(user_id: int, day: date | None = None) -> bool:
     return True
 
 
+def _apply_delta_or_value(current: int, action: str) -> int:
+    """"+N"/"-N" -> nisbiy o'zgarish, aks holda mutlaq qiymat sifatida o'qiladi."""
+    if action and action[0] in "+-" and action[1:].isdigit():
+        return current + int(action)
+    try:
+        return int(action)
+    except ValueError:
+        return current
+
+
 def update_daily_limit(action: str) -> int:
-    current = RUNTIME_SETTINGS.daily_limit
-    if action == "+1":
-        new_limit = current + 1
-    elif action == "-1":
-        new_limit = current - 1
-    else:
-        try:
-            new_limit = int(action)
-        except ValueError:
-            return current
-    RUNTIME_SETTINGS.daily_limit = max(1, new_limit)
+    RUNTIME_SETTINGS.daily_limit = max(1, _apply_delta_or_value(RUNTIME_SETTINGS.daily_limit, action))
     return RUNTIME_SETTINGS.daily_limit
+
+
+def update_off_topic_block_minutes(action: str) -> int:
+    new_val = max(1, _apply_delta_or_value(RUNTIME_SETTINGS.off_topic_block_minutes, action))
+    RUNTIME_SETTINGS.off_topic_block_minutes = new_val
+    OFF_TOPIC_GUARD.configure(window_seconds=new_val * 60, block_seconds=new_val * 60)
+    return new_val
+
+
+def update_off_topic_max_attempts(action: str) -> int:
+    new_val = max(1, _apply_delta_or_value(RUNTIME_SETTINGS.off_topic_max_attempts, action))
+    RUNTIME_SETTINGS.off_topic_max_attempts = new_val
+    OFF_TOPIC_GUARD.configure(max_attempts=new_val)
+    return new_val
 
 
 def settings_text() -> str:
     return (
         "⚙️ <b>Bot sozlamalari</b>\n\n"
         f"Oddiy foydalanuvchi uchun kunlik limit: <b>{RUNTIME_SETTINGS.daily_limit} ta</b>\n"
+        f"Off-topic bloklash vaqti: <b>{RUNTIME_SETTINGS.off_topic_block_minutes} daqiqa</b>\n"
+        f"Off-topic urinishlar soni (blokgacha): <b>{RUNTIME_SETTINGS.off_topic_max_attempts} ta</b>\n"
         "Hisoblanadigan vaqt zonasi: <b>UTC+5</b>\n\n"
-        "Limitni quyidagi tugmalar orqali o'zgartiring."
+        "1-qator — kunlik limit, 2-qator — bloklash vaqti (daqiqa), "
+        "3-qator — urinishlar soni. Tugmalar orqali o'zgartiring."
     )
 
 
@@ -300,7 +327,8 @@ async def on_text(message: Message) -> None:
         if not parsed_filter.is_phone_related:
             action = OFF_TOPIC_GUARD.register_off_topic(user_id)
             if action == "warn":
-                await message.answer(OFF_TOPIC_WARNING, reply_markup=_menu_for(message))
+                text = off_topic_warning_text(RUNTIME_SETTINGS.off_topic_block_minutes)
+                await message.answer(text, reply_markup=_menu_for(message))
             return
         if not check_daily_limit(user_id):
             await message.answer(daily_limit_message(), reply_markup=_menu_for(message))
@@ -332,9 +360,25 @@ async def on_settings(query: CallbackQuery) -> None:
         await query.answer("Faqat administrator uchun.", show_alert=True)
         return
 
-    action = (query.data or "").rsplit(":", maxsplit=1)[-1]
-    new_limit = update_daily_limit(action)
-    await query.answer(f"Kunlik limit: {new_limit} ta")
+    parts = (query.data or "").split(":")
+    if len(parts) != 3:
+        await query.answer()
+        return
+    _, field, action = parts
+
+    if field == "daily":
+        new_val = update_daily_limit(action)
+        await query.answer(f"Kunlik limit: {new_val} ta")
+    elif field == "blockmin":
+        new_val = update_off_topic_block_minutes(action)
+        await query.answer(f"Bloklash vaqti: {new_val} daqiqa")
+    elif field == "attempts":
+        new_val = update_off_topic_max_attempts(action)
+        await query.answer(f"Urinishlar soni: {new_val} ta")
+    else:
+        await query.answer()
+        return
+
     if query.message:
         await query.message.edit_text(settings_text(), reply_markup=keyboards.settings_keyboard())
 

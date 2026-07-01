@@ -105,14 +105,19 @@ Bot qayta ishga tushganda qiymat `.env` dagi `DAILY_LIMIT` dan qayta olinadi.
 ## Off-topic himoyasi
 
 Bot tavsiya hisoblashdan oldin so'rov telefon mavzusiga aloqadorligini
-tekshiradi. Birinchi aloqasiz so'rovda ogohlantirish beradi. Shu
-ogohlantirishdan keyingi 60 daqiqada yana aloqasiz so'rov yuborilsa,
-foydalanuvchi 1 soatga jim bloklanadi.
+tekshiradi. Birinchi aloqasiz so'rovda ogohlantirish beradi. Sozlangan
+"bloklash vaqti" ichida yana aloqasiz so'rov(lar) yuborilsa (sozlangan
+"urinishlar soni"ga yetganda), foydalanuvchi shu vaqtga jim bloklanadi.
 
 Blok vaqtida matn, komandalar va inline tugmalar javobsiz qoldiriladi. Qoida
 adminlarga ham tegishli. Strike va bloklar xotirada saqlanadi, shu sababli bot
 qayta ishga tushsa ular tozalanadi. Off-topic so'rovlar kunlik telefon so'rovi
 limitidan foydalanmaydi.
+
+Standart qiymatlar: bloklash vaqti **60 daqiqa**, urinishlar soni **2 ta**
+(`.env`dagi `OFF_TOPIC_BLOCK_MINUTES` / `OFF_TOPIC_MAX_ATTEMPTS`). Admin
+`/settings` panelidagi 2- va 3-qator tugmalari orqali botni qayta ishga
+tushirmasdan real vaqtda o'zgartirishi mumkin.
 
 ## Narx: "gacha" vs "atrofida"
 - **«5 mln gacha»** — qattiq chegara (`price_max`): 5 mln dan qimmati ko'rsatilmaydi.

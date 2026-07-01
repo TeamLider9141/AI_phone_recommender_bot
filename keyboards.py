@@ -23,13 +23,26 @@ def main_menu_keyboard(is_admin: bool = False) -> ReplyKeyboardMarkup:
 
 
 def settings_keyboard() -> InlineKeyboardMarkup:
-    """Admin uchun kunlik limitni tez sozlash tugmalari."""
+    """Admin uchun kunlik limit, off-topic bloklash vaqti va urinishlar sonini tez sozlash tugmalari."""
     b = InlineKeyboardBuilder()
-    b.button(text="-1", callback_data="settings:daily:-1")
-    b.button(text="+1", callback_data="settings:daily:+1")
-    b.button(text="5", callback_data="settings:daily:5")
-    b.button(text="10", callback_data="settings:daily:10")
-    b.adjust(2)
+    b.row(
+        InlineKeyboardButton(text="-1", callback_data="settings:daily:-1"),
+        InlineKeyboardButton(text="+1", callback_data="settings:daily:+1"),
+        InlineKeyboardButton(text="5", callback_data="settings:daily:5"),
+        InlineKeyboardButton(text="10", callback_data="settings:daily:10"),
+    )
+    b.row(
+        InlineKeyboardButton(text="-15 daq", callback_data="settings:blockmin:-15"),
+        InlineKeyboardButton(text="+15 daq", callback_data="settings:blockmin:+15"),
+        InlineKeyboardButton(text="30 daq", callback_data="settings:blockmin:30"),
+        InlineKeyboardButton(text="60 daq", callback_data="settings:blockmin:60"),
+    )
+    b.row(
+        InlineKeyboardButton(text="-1", callback_data="settings:attempts:-1"),
+        InlineKeyboardButton(text="+1", callback_data="settings:attempts:+1"),
+        InlineKeyboardButton(text="2", callback_data="settings:attempts:2"),
+        InlineKeyboardButton(text="3", callback_data="settings:attempts:3"),
+    )
     return b.as_markup()
 
 

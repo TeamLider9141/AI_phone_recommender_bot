@@ -34,6 +34,8 @@ class Config:
     rate_max: int = 15         # rate_window ichida ruxsat etilgan so'rov soni
     rate_window: int = 60      # rate limit oynasi (soniya)
     daily_limit: int = 5       # oddiy foydalanuvchi uchun kunlik so'rov limiti (UTC+5)
+    off_topic_block_minutes: int = 60   # mavzuga aloqasiz so'rov uchun bloklash davomiyligi (daqiqa)
+    off_topic_max_attempts: int = 2     # nechanchi ketma-ket off-topic urinish bloklaydi
 
     @property
     def ai_enabled(self) -> bool:
@@ -54,6 +56,8 @@ def load_config() -> Config:
         rate_max=int(os.getenv("RATE_MAX", "15")),
         rate_window=int(os.getenv("RATE_WINDOW", "60")),
         daily_limit=int(os.getenv("DAILY_LIMIT", "5")),
+        off_topic_block_minutes=int(os.getenv("OFF_TOPIC_BLOCK_MINUTES", "60")),
+        off_topic_max_attempts=int(os.getenv("OFF_TOPIC_MAX_ATTEMPTS", "2")),
     )
     return cfg
 

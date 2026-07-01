@@ -101,6 +101,87 @@ def test_update_daily_limit_from_settings_action() -> None:
         main.RUNTIME_SETTINGS.daily_limit = old_limit
 
 
+def test_settings_keyboard_has_off_topic_controls() -> None:
+    markup = keyboards.settings_keyboard()
+    callback_data = [button.callback_data for row in markup.inline_keyboard for button in row]
+
+    assert any(cd.startswith("settings:blockmin:") for cd in callback_data)
+    assert any(cd.startswith("settings:attempts:") for cd in callback_data)
+
+
+def test_settings_text_shows_off_topic_config() -> None:
+    old_minutes = main.RUNTIME_SETTINGS.off_topic_block_minutes
+    old_attempts = main.RUNTIME_SETTINGS.off_topic_max_attempts
+    main.RUNTIME_SETTINGS.off_topic_block_minutes = 45
+    main.RUNTIME_SETTINGS.off_topic_max_attempts = 3
+    try:
+        text = main.settings_text()
+        assert "45" in text
+        assert "3 ta" in text
+    finally:
+        main.RUNTIME_SETTINGS.off_topic_block_minutes = old_minutes
+        main.RUNTIME_SETTINGS.off_topic_max_attempts = old_attempts
+
+
+def test_update_off_topic_settings_reconfigures_guard() -> None:
+    old_minutes = main.RUNTIME_SETTINGS.off_topic_block_minutes
+    old_attempts = main.RUNTIME_SETTINGS.off_topic_max_attempts
+    try:
+        assert main.update_off_topic_block_minutes("+15") == old_minutes + 15
+        assert main.OFF_TOPIC_GUARD.block_seconds == (old_minutes + 15) * 60
+        assert main.update_off_topic_max_attempts("+1") == old_attempts + 1
+        assert main.OFF_TOPIC_GUARD.max_attempts == old_attempts + 1
+    finally:
+        main.update_off_topic_block_minutes(str(old_minutes))
+        main.update_off_topic_max_attempts(str(old_attempts))
+
+
+class FakeCallbackMessage:
+    def __init__(self) -> None:
+        self.edits: list[tuple[str, object | None]] = []
+
+    async def edit_text(self, text: str, reply_markup=None) -> None:  # noqa: ANN001
+        self.edits.append((text, reply_markup))
+
+
+class FakeCallbackQuery:
+    def __init__(self, data: str, user_id: int) -> None:
+        self.data = data
+        self.from_user = type("FakeUser", (), {"id": user_id})()
+        self.message = FakeCallbackMessage()
+        self.answers: list[tuple[str, bool]] = []
+
+    async def answer(self, text: str = "", show_alert: bool = False) -> None:
+        self.answers.append((text, show_alert))
+
+
+async def test_on_settings_dispatches_blockmin_field() -> None:
+    old_admins = main.config.admin_ids
+    old_minutes = main.RUNTIME_SETTINGS.off_topic_block_minutes
+    main.config.admin_ids = [999]
+    try:
+        query = FakeCallbackQuery("settings:blockmin:30", user_id=999)
+        await main.on_settings(query)
+        assert main.RUNTIME_SETTINGS.off_topic_block_minutes == 30
+        assert "30" in query.answers[0][0]
+        assert query.message.edits  # panel qayta chizildi
+    finally:
+        main.config.admin_ids = old_admins
+        main.update_off_topic_block_minutes(str(old_minutes))
+
+
+async def test_on_settings_rejects_non_admin() -> None:
+    old_admins = main.config.admin_ids
+    main.config.admin_ids = [999]
+    try:
+        query = FakeCallbackQuery("settings:daily:+1", user_id=1)
+        await main.on_settings(query)
+        assert query.answers[0][1] is True  # show_alert
+        assert not query.message.edits
+    finally:
+        main.config.admin_ids = old_admins
+
+
 async def test_clear_command() -> None:
     msg = FakeMessage()
     main.USER_FILTERS[msg.chat.id] = QueryFilter(brand="Samsung")
@@ -125,6 +206,11 @@ def main_test() -> None:
     test_daily_limit_for_non_admin_only()
     test_daily_limit_settings_text()
     test_update_daily_limit_from_settings_action()
+    test_settings_keyboard_has_off_topic_controls()
+    test_settings_text_shows_off_topic_config()
+    test_update_off_topic_settings_reconfigures_guard()
+    asyncio.run(test_on_settings_dispatches_blockmin_field())
+    asyncio.run(test_on_settings_rejects_non_admin())
     asyncio.run(test_clear_command())
     print("bot command tests passed")
 
