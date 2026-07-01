@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import asyncio
 from datetime import date
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import ai
 import keyboards
@@ -20,15 +22,29 @@ class FakeChat:
 class FakeBot:
     def __init__(self) -> None:
         self.deleted: list[tuple[int, int]] = []
+        self.sent: list[tuple[int, str]] = []
 
     async def delete_message(self, chat_id: int, message_id: int) -> None:
         self.deleted.append((chat_id, message_id))
+
+    async def send_message(self, chat_id: int, text: str) -> None:
+        self.sent.append((chat_id, text))
 
 
 class FakeMessage:
     def __init__(self, user_id: int = 12345) -> None:
         self.chat = FakeChat()
-        self.from_user = type("FakeUser", (), {"id": user_id})()
+        self.from_user = type(
+            "FakeUser",
+            (),
+            {
+                "id": user_id,
+                "first_name": "Ali",
+                "last_name": "Valiyev",
+                "username": "ali",
+                "language_code": "uz",
+            },
+        )()
         self.bot = FakeBot()
         self.answers: list[tuple[str, object | None]] = []
 
@@ -173,8 +189,14 @@ async def test_on_source_choice_remembers_selection_and_uses_pending_query() -> 
 async def test_process_reports_empty_texnomart_source_explicitly() -> None:
     old_get_phones = main.sheets.get_phones
     old_parse = main.ai.parse_query
+    old_to_thread = main.asyncio.to_thread
+
+    async def inline_to_thread(func, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
+        return func(*args, **kwargs)
+
     main.sheets.get_phones = lambda source=None: []  # noqa: ARG005
     main.ai.parse_query = lambda text: QueryFilter(is_phone_related=True, brand="Samsung")
+    main.asyncio.to_thread = inline_to_thread
 
     try:
         reply, f, has_results = await main._process("Samsung kerak", source="texnomart")
@@ -185,6 +207,7 @@ async def test_process_reports_empty_texnomart_source_explicitly() -> None:
     finally:
         main.sheets.get_phones = old_get_phones
         main.ai.parse_query = old_parse
+        main.asyncio.to_thread = old_to_thread
 
 
 async def test_reset_source_choice_clears_selection_and_reprompts() -> None:
@@ -267,6 +290,15 @@ def test_settings_keyboard_has_off_topic_controls() -> None:
     assert any(cd.startswith("settings:attempts:") for cd in callback_data)
 
 
+def test_settings_keyboard_has_about_users_button() -> None:
+    markup = keyboards.settings_keyboard()
+    callback_data = [button.callback_data for row in markup.inline_keyboard for button in row]
+    button_texts = [button.text for row in markup.inline_keyboard for button in row]
+
+    assert "👥 About users" in button_texts
+    assert "settings:users:about" in callback_data
+
+
 def test_settings_text_shows_off_topic_config() -> None:
     old_minutes = main.RUNTIME_SETTINGS.off_topic_block_minutes
     old_attempts = main.RUNTIME_SETTINGS.off_topic_max_attempts
@@ -340,6 +372,48 @@ async def test_on_settings_rejects_non_admin() -> None:
         main.config.admin_ids = old_admins
 
 
+async def test_start_notifies_admin_for_new_user_once() -> None:
+    old_admins = main.config.admin_ids
+    old_users_path = main.config.bot_users_path
+    main.config.admin_ids = [999]
+    try:
+        with TemporaryDirectory() as tmp:
+            main.config.bot_users_path = str(Path(tmp) / "bot_users.json")
+            msg = FakeMessage(user_id=12345)
+
+            await main.cmd_start(msg)
+            await main.cmd_start(msg)
+
+            assert len(msg.bot.sent) == 1
+            assert msg.bot.sent[0][0] == 999
+            assert "Yangi user" in msg.bot.sent[0][1]
+            assert "12345" in msg.bot.sent[0][1]
+    finally:
+        main.config.admin_ids = old_admins
+        main.config.bot_users_path = old_users_path
+
+
+async def test_on_settings_about_users_shows_summary() -> None:
+    old_admins = main.config.admin_ids
+    old_users_path = main.config.bot_users_path
+    main.config.admin_ids = [999]
+    try:
+        with TemporaryDirectory() as tmp:
+            main.config.bot_users_path = str(Path(tmp) / "bot_users.json")
+            msg = FakeMessage(user_id=12345)
+            await main.cmd_start(msg)
+
+            query = FakeCallbackQuery("settings:users:about", user_id=999)
+            await main.on_settings(query)
+
+            assert query.message.edits
+            assert "About users" in query.message.edits[0][0]
+            assert "Jami userlar: 1" in query.message.edits[0][0]
+    finally:
+        main.config.admin_ids = old_admins
+        main.config.bot_users_path = old_users_path
+
+
 async def test_clear_command() -> None:
     msg = FakeMessage()
     old_filters = dict(main.USER_FILTERS)
@@ -400,6 +474,7 @@ def main_test() -> None:
     test_daily_limit_settings_text()
     test_update_daily_limit_from_settings_action()
     test_settings_keyboard_has_off_topic_controls()
+    test_settings_keyboard_has_about_users_button()
     test_settings_text_shows_off_topic_config()
     test_update_off_topic_settings_reconfigures_guard()
     asyncio.run(test_on_text_prompts_for_source_when_none_selected())
@@ -408,6 +483,8 @@ def main_test() -> None:
     asyncio.run(test_reset_source_choice_clears_selection_and_reprompts())
     asyncio.run(test_on_settings_dispatches_blockmin_field())
     asyncio.run(test_on_settings_rejects_non_admin())
+    asyncio.run(test_start_notifies_admin_for_new_user_once())
+    asyncio.run(test_on_settings_about_users_shows_summary())
     asyncio.run(test_clear_command())
     print("bot command tests passed")
 

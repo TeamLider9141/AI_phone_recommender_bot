@@ -119,8 +119,15 @@ python smoke_test.py
 - `/help` — qisqa qo'llanma
 - `/clear` — foydalanuvchining oxirgi tavsiya xabarlarini va source tanlovini tozalash
 - `/reload` — bazani majburiy yangilash (faqat `ADMIN_IDS`)
-- `/settings` — kunlik limitni tugmalar orqali o'zgartirish (faqat `ADMIN_IDS`)
+- `/settings` — limitlar va About users paneli (faqat `ADMIN_IDS`)
 - Oddiy matn — telefon tavsiyasi
+
+## User kuzatuvi
+
+Har bir `/start` bosgan foydalanuvchi `BOT_USERS_PATH` dagi lokal JSON faylga
+yoziladi. Birinchi marta start bosgan user haqida adminlarga xabar boradi.
+`/settings` ichidagi `About users` tugmasi jami userlar va oxirgi start bosgan
+foydalanuvchilar ro'yxatini ko'rsatadi. Bu runtime fayl GitHub'ga push qilinmaydi.
 
 ## Kunlik limit
 

@@ -43,6 +43,7 @@ def settings_keyboard() -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="2", callback_data="settings:attempts:2"),
         InlineKeyboardButton(text="3", callback_data="settings:attempts:3"),
     )
+    b.row(InlineKeyboardButton(text="👥 About users", callback_data="settings:users:about"))
     return b.as_markup()
 
 

@@ -15,6 +15,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import BotCommand, CallbackQuery, Message
 
 import ai
+import bot_users
 import keyboards
 import sheets
 from config import config
@@ -254,6 +255,35 @@ async def notify_startup(bot: Bot, phone_count: int) -> None:
             logger.exception("Startup xabarini adminga yuborib bo'lmadi: %s", admin_id)
 
 
+async def notify_new_user(bot: Bot, user: bot_users.BotUser) -> None:
+    if not config.admin_ids:
+        return
+    text = bot_users.new_user_admin_text(user)
+    for admin_id in config.admin_ids:
+        try:
+            await bot.send_message(admin_id, text)
+        except Exception:  # noqa: BLE001
+            logger.exception("Yangi user xabarini adminga yuborib bo'lmadi: %s", admin_id)
+
+
+async def track_start_user(message: Message) -> None:
+    tg_user = message.from_user
+    if tg_user is None:
+        return
+    now = datetime.now(UTC_PLUS_5).isoformat(timespec="seconds")
+    user, is_new = bot_users.upsert_user(
+        config.bot_users_path,
+        user_id=tg_user.id,
+        first_name=getattr(tg_user, "first_name", None),
+        last_name=getattr(tg_user, "last_name", None),
+        username=getattr(tg_user, "username", None),
+        language_code=getattr(tg_user, "language_code", None),
+        now=now,
+    )
+    if is_new:
+        await notify_new_user(message.bot, user)
+
+
 def _remember_result_message(chat_id: int, message_id: int) -> None:
     messages = USER_RESULT_MESSAGES.setdefault(chat_id, [])
     messages.append(message_id)
@@ -328,6 +358,7 @@ async def _resort(f: QueryFilter, source: str | None = None) -> str:
 
 
 async def cmd_start(message: Message) -> None:
+    await track_start_user(message)
     await message.answer(WELCOME, reply_markup=_menu_for(message))
 
 
@@ -518,6 +549,12 @@ async def on_settings(query: CallbackQuery) -> None:
     elif field == "attempts":
         new_val = update_off_topic_max_attempts(action)
         await query.answer(f"Urinishlar soni: {new_val} ta")
+    elif field == "users" and action == "about":
+        await query.answer("Userlar ro'yxati")
+        if query.message:
+            text = bot_users.about_users_text(config.bot_users_path)
+            await query.message.edit_text(text, reply_markup=keyboards.settings_keyboard())
+        return
     else:
         await query.answer()
         return

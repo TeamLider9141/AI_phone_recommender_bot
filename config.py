@@ -33,6 +33,7 @@ class Config:
     texnomart_max_items: int = 80
     texnomart_cache_path: str = "texnomart_cache.json"
     texnomart_cache_ttl: int = 1800
+    bot_users_path: str = "bot_users.json"
     admin_ids: list[int] = field(default_factory=list)
     cache_ttl: int = 300       # soniya
     gemini_model: str = "gemini-2.0-flash"
@@ -64,6 +65,7 @@ def load_config() -> Config:
         texnomart_max_items=int(os.getenv("TEXNOMART_MAX_ITEMS", "80")),
         texnomart_cache_path=os.getenv("TEXNOMART_CACHE_PATH", "texnomart_cache.json").strip(),
         texnomart_cache_ttl=int(os.getenv("TEXNOMART_CACHE_TTL", "1800")),
+        bot_users_path=os.getenv("BOT_USERS_PATH", "bot_users.json").strip(),
         admin_ids=_int_list(os.getenv("ADMIN_IDS")),
         cache_ttl=int(os.getenv("CACHE_TTL", "300")),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip(),

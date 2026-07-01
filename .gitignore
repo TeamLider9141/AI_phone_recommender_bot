@@ -1,6 +1,7 @@
 .env
 credentials.json
 texnomart_cache.json
+bot_users.json
 __pycache__/
 *.pyc
 .venv/
