@@ -102,6 +102,18 @@ ozod va ularning menyusida `/settings` tugmasi ko'rinadi.
 `/settings` orqali o'zgartirilgan limit bot ishlayotgan vaqt davomida amal qiladi.
 Bot qayta ishga tushganda qiymat `.env` dagi `DAILY_LIMIT` dan qayta olinadi.
 
+## Off-topic himoyasi
+
+Bot tavsiya hisoblashdan oldin so'rov telefon mavzusiga aloqadorligini
+tekshiradi. Birinchi aloqasiz so'rovda ogohlantirish beradi. Shu
+ogohlantirishdan keyingi 60 daqiqada yana aloqasiz so'rov yuborilsa,
+foydalanuvchi 1 soatga jim bloklanadi.
+
+Blok vaqtida matn, komandalar va inline tugmalar javobsiz qoldiriladi. Qoida
+adminlarga ham tegishli. Strike va bloklar xotirada saqlanadi, shu sababli bot
+qayta ishga tushsa ular tozalanadi. Off-topic so'rovlar kunlik telefon so'rovi
+limitidan foydalanmaydi.
+
 ## Narx: "gacha" vs "atrofida"
 - **«5 mln gacha»** — qattiq chegara (`price_max`): 5 mln dan qimmati ko'rsatilmaydi.
 - **«5 mln atrofida / chamasi / ~5 mln»** — yaqinlik (`price_target`): arzonroq VA

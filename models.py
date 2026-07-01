@@ -57,6 +57,7 @@ CameraPriority = str  # "none" | "low" | "high"
 @dataclass
 class QueryFilter:
     """Gemini foydalanuvchi matnidan ajratib oladigan strukturali filtr."""
+    is_phone_related: bool = True
     brand: Optional[str] = None
     model: Optional[str] = None
     ram_min: Optional[int] = None
@@ -86,6 +87,8 @@ class QueryFilter:
         cp = clean.get("camera_priority")
         if cp not in ("none", "low", "high"):
             clean["camera_priority"] = "none"
+        if "is_phone_related" in clean and not isinstance(clean["is_phone_related"], bool):
+            clean.pop("is_phone_related")
         if clean.get("sort_by") not in SORT_KEYS:
             clean.pop("sort_by", None)
         # limit ni abuse cap bilan cheklaymiz (Gemini katta son qaytarsa ham)
@@ -134,6 +137,10 @@ SORT_KEYS = set(SORT_LABELS)
 QUERY_FILTER_SCHEMA = {
     "type": "object",
     "properties": {
+        "is_phone_related": {
+            "type": "boolean",
+            "description": "Faqat telefon/smartfon tanlash, narx, model, taqqoslash yoki xususiyatlar haqida bo'lsa true",
+        },
         "brand": {"type": "string", "description": "Telefon brendi, masalan Samsung, iPhone, Xiaomi"},
         "model": {"type": "string", "description": "Aniq model nomi agar aytilgan bo'lsa"},
         "ram_min": {"type": "integer", "description": "Minimal RAM (GB)"},
@@ -174,4 +181,5 @@ QUERY_FILTER_SCHEMA = {
                            "Faqat turli xil maydonlar yoki-langan bo'lsa.",
         },
     },
+    "required": ["is_phone_related"],
 }
