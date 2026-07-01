@@ -2,8 +2,12 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
+
+from aiogram import BaseMiddleware
+from aiogram.types import TelegramObject
 
 STRIKE_WINDOW_SECONDS = 60 * 60
 BLOCK_DURATION_SECONDS = 60 * 60
@@ -55,3 +59,30 @@ class OffTopicGuard:
             return "blocked"
         self._states[user_id] = UserTopicState(warned_at=current)
         return "warn"
+
+
+class SilentBlockMiddleware(BaseMiddleware):
+    """Bloklangan foydalanuvchi update'ini handlerlarga yetkazmaydi."""
+
+    def __init__(
+        self,
+        guard: OffTopicGuard,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self.guard = guard
+        self.clock = clock
+
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: dict[str, Any],
+    ) -> Any:
+        from_user = getattr(event, "from_user", None)
+        user_id = getattr(from_user, "id", None)
+        if user_id is None:
+            chat = getattr(event, "chat", None)
+            user_id = getattr(chat, "id", None)
+        if user_id is not None and self.guard.is_blocked(user_id, self.clock()):
+            return None
+        return await handler(event, data)

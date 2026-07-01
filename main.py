@@ -20,6 +20,7 @@ import sheets
 from config import config
 from models import QueryFilter, SORT_LABELS
 from recommender import recommend
+from topic_guard import OFF_TOPIC_WARNING, OffTopicGuard, SilentBlockMiddleware
 
 # Foydalanuvchining oxirgi so'rov filtri (chat_id -> QueryFilter). Tugma bosilganda kerak.
 USER_FILTERS: dict[int, QueryFilter] = {}
@@ -41,6 +42,7 @@ class RuntimeSettings:
 
 RUNTIME_SETTINGS = RuntimeSettings(daily_limit=max(1, config.daily_limit))
 DAILY_USAGE: dict[tuple[int, date], int] = defaultdict(int)
+OFF_TOPIC_GUARD = OffTopicGuard()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("bot")
@@ -189,12 +191,15 @@ def _remember_result_message(chat_id: int, message_id: int) -> None:
     messages.append(message_id)
 
 
-async def _process(text: str) -> tuple[str, QueryFilter, bool]:
+async def _process(
+    text: str,
+    parsed_filter: QueryFilter | None = None,
+) -> tuple[str, QueryFilter, bool]:
     """So'rovni qayta ishlaydi. Return: (javob matni, filtr, natija_bormi).
     natija_bormi=False bo'lsa tugmalar ko'rsatilmaydi (topilmadi/bo'sh holat)."""
     def work() -> tuple[str, QueryFilter, bool]:
         phones = sheets.get_phones()
-        f = ai.parse_query(text)
+        f = parsed_filter or ai.parse_query(text)
         if not phones:
             return "Baza hozircha bo'sh yoki yuklanmadi. Administrator bilan bog'laning.", f, False
         # So'ralgan brend bazada umuman yo'q bo'lsa — aniq "topilmadi".
@@ -290,12 +295,19 @@ async def on_text(message: Message) -> None:
         return
 
     user_id = message.from_user.id if message.from_user else message.chat.id
-    if not check_daily_limit(user_id):
-        await message.answer(daily_limit_message(), reply_markup=_menu_for(message))
-        return
-    await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
     try:
-        reply, f, has_results = await _process(message.text)
+        parsed_filter = await asyncio.to_thread(ai.parse_query, message.text)
+        if not parsed_filter.is_phone_related:
+            action = OFF_TOPIC_GUARD.register_off_topic(user_id)
+            if action == "warn":
+                await message.answer(OFF_TOPIC_WARNING, reply_markup=_menu_for(message))
+            return
+        if not check_daily_limit(user_id):
+            await message.answer(daily_limit_message(), reply_markup=_menu_for(message))
+            return
+
+        await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+        reply, f, has_results = await _process(message.text, parsed_filter)
     except Exception:  # noqa: BLE001
         logger.exception("So'rovni qayta ishlashda xato")
         await message.answer(
@@ -353,6 +365,9 @@ async def on_sort(query: CallbackQuery) -> None:
 
 def build_dispatcher() -> Dispatcher:
     dp = Dispatcher()
+    block_middleware = SilentBlockMiddleware(OFF_TOPIC_GUARD)
+    dp.message.outer_middleware(block_middleware)
+    dp.callback_query.outer_middleware(block_middleware)
     dp.message.register(cmd_start, CommandStart())
     dp.message.register(cmd_help, Command("help"))
     dp.message.register(cmd_clear, Command("clear"))

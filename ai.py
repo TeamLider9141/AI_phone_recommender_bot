@@ -129,13 +129,18 @@ _PHONE_TOPIC_TERMS = (
     "mediatek", "dimensity", "exynos",
 )
 
+# O'zbek tili qo'shimchali (agglutinativ): "Samsungdan", "telefonlarni",
+# "iPhoneni" kabi so'zlar ham termin sifatida tanilishi uchun, so'z tagidan
+# keyin keladigan keng tarqalgan qo'shimchalar zanjirini ham qabul qilamiz.
+_UZ_SUFFIX = r"(?:ning|lar|dan|tan|gacha|day|dek|ni|ga|qa|ka|da|ta|im|ing|i)*"
+
 
 def is_phone_related_text(text: str) -> bool:
     """Matnda telefon mavzusiga oid aniq signal borligini tekshiradi."""
     normalized = text.casefold()
     terms = (*_PHONE_TOPIC_TERMS, *_BRANDS)
     return any(
-        re.search(rf"(?<!\w){re.escape(term)}(?!\w)", normalized)
+        re.search(rf"(?<!\w){re.escape(term)}{_UZ_SUFFIX}(?!\w)", normalized)
         for term in terms
     )
 
