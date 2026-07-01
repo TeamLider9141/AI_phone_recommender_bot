@@ -126,8 +126,34 @@ _PHONE_TOPIC_TERMS = (
     "telefon", "smartfon", "smartphone", "phone", "mobil", "android", "iphone",
     "ios", "kamera", "camera", "batareya", "batareyka", "battery", "ram",
     "xotira", "storage", "processor", "protsessor", "chipset", "snapdragon",
-    "mediatek", "dimensity", "exynos",
+    "mediatek", "dimensity", "exynos", "model", "modeli",
 )
+
+# Konkret model raqami ("a51", "s24", "note12", "iphone13" kabi harf+raqam
+# aralash yozilgan tokenlar). Birlik bilan tugagan sonlarni ("128gb", "5000mah")
+# model deb qabul qilmaslik uchun _looks_like_spec_value bilan filtrlaymiz.
+_MODEL_CANDIDATE_RE = re.compile(r"\b(?=[a-z0-9]*\d)(?=[a-z0-9]*[a-z])[a-z0-9]+\b")
+_SPEC_UNIT_TAILS = (
+    "gb", "mah", "mp", "kg", "ml", "mb", "kb", "g",  # "g" -> 5g/4g tarmoq avlodi, model emas
+    "mln", "million", "ming", "dona", "ta", "kun", "yil", "soat",
+)
+
+
+def _looks_like_spec_value(token: str) -> bool:
+    """'128gb', '5000mah' kabi son+birlik tokenlarini model sifatida qabul qilmaslik."""
+    m = re.match(r"^(\d+)([a-z]*)$", token)
+    return bool(m and m.group(2) in _SPEC_UNIT_TAILS)
+
+
+def _extract_model_token(text: str) -> str | None:
+    """Matndan 'a51', 's24' kabi harf+raqam aralash model tokenini ajratadi."""
+    t = text.lower()
+    for match in _MODEL_CANDIDATE_RE.finditer(t):
+        token = match.group(0)
+        if _looks_like_spec_value(token):
+            continue
+        return token
+    return None
 
 # O'zbek tili qo'shimchali (agglutinativ): "Samsungdan", "telefonlarni",
 # "iPhoneni" kabi so'zlar ham termin sifatida tanilishi uchun, so'z tagidan
@@ -179,6 +205,10 @@ def _fallback_parse(text: str) -> QueryFilter:
                 if f.brand == "iPhone":
                     f.os = "iOS"
                 break
+
+    model_token = _extract_model_token(t)
+    if model_token:
+        f.model = model_token
 
     # RAM: "12 gb ram" / "8gb ram" / "ram 8"
     m = re.search(r"(\d{1,2})\s*(?:gb)?\s*ram", t) or re.search(r"ram\s*(\d{1,2})", t)
