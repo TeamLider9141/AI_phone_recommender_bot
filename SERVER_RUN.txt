@@ -29,7 +29,15 @@ python smoke_test.py
 7) Botni qo'lda ishga tushirish
 python main.py
 
-8) Production uchun systemd tavsiya qilinadi
+8) GitHub'dagi o'zgarishlarni qo'llash
+
+Serverda kod yangilangan bo'lsa:
+git pull
+pip install -r requirements.txt
+
+Agar dependency o'zgargan bo'lsa, qayta o'rnatish kerak bo'ladi.
+
+9) Production uchun systemd tavsiya qilinadi
 
 Service fayl namunasi:
 
@@ -50,13 +58,13 @@ Environment=PYTHONUNBUFFERED=1
 [Install]
 WantedBy=multi-user.target
 
-9) Service'ni yoqing
+10) Service'ni yoqing
 sudo systemctl daemon-reload
 sudo systemctl enable ai_phone_bot
 sudo systemctl start ai_phone_bot
 sudo systemctl status ai_phone_bot
 
-10) Loglarni ko'rish
+11) Loglarni ko'rish
 journalctl -u ai_phone_bot -f
 
 Eslatma:
