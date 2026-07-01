@@ -75,10 +75,16 @@ Bot endi har bir so'rov uchun avval qaysi manbadan qidirishni so'raydi:
 Foydalanuvchi birini tanlagach, keyingi so'rovlar shu manbada ishlaydi.
 Natija ostidagi `🔎 Boshqa bazadan izlash` tugmasi esa tanlovni qayta ochadi.
 
-`TEXNOMART_BASE_URL`, `TEXNOMART_MAX_PAGES` va `TEXNOMART_MAX_ITEMS` Texnomart
-scraper sozlamalari uchun qoladi. Serverda so'rovlar qotib qolmasligi uchun
-default qiymatlar cheklangan: 16 sahifa va 80 ta mahsulot. `PHONE_SOURCE` odatda
-`sheet` bo'lib qoladi va faqat texnik fallback/default sifatida ishlaydi.
+`TEXNOMART_BASE_URL`, `TEXNOMART_MAX_PAGES`, `TEXNOMART_MAX_ITEMS`,
+`TEXNOMART_CACHE_PATH` va `TEXNOMART_CACHE_TTL` Texnomart cache/scraper
+sozlamalari uchun qoladi. Bot Texnomart ro'yxatini JSON cache'ga saqlaydi;
+keyingi qidiruvlar saytga chiqmasdan shu cache ustida ishlaydi. Cache eskirsa,
+eski ro'yxat darhol qaytadi va yangilash orqa fonda boshlanadi. `detail_url`
+saqlangani uchun natija manbalarida Texnomart linklari ko'rinadi.
+
+Default qiymatlar cheklangan: 16 sahifa, 80 ta mahsulot, 30 daqiqa cache.
+`PHONE_SOURCE` odatda `sheet` bo'lib qoladi va faqat texnik fallback/default
+sifatida ishlaydi.
 
 > Eslatma: agar `credentials.json` bo'lmasa, bot public share qilingan Sheet'ni
 > authsiz o'qishga urinadi. Bu faqat Sheet haqiqatan ham viewer/public bo'lsa ishlaydi.
@@ -90,7 +96,9 @@ qoldirsangiz bot chipset nomidan taxminiy ball hisoblaydi.
 ```bash
 cp .env.example .env
 # .env ni to'ldiring: TELEGRAM_BOT_TOKEN, GEMINI_API_KEY, GOOGLE_SHEET_ID, ADMIN_IDS
-# Texnomart scraper sozlamalari uchun: TEXNOMART_BASE_URL, TEXNOMART_MAX_PAGES, TEXNOMART_MAX_ITEMS
+# Texnomart cache/scraper sozlamalari uchun:
+# TEXNOMART_BASE_URL, TEXNOMART_MAX_PAGES, TEXNOMART_MAX_ITEMS,
+# TEXNOMART_CACHE_PATH, TEXNOMART_CACHE_TTL
 ```
 
 ### 6. Ishga tushirish

@@ -17,6 +17,7 @@ from urllib.request import urlopen
 
 from config import config
 from models import Phone
+import texnomart_cache
 import texnomart_scraper
 
 logger = logging.getLogger(__name__)
@@ -124,14 +125,23 @@ def _load_from_csv(path: str = "sample_data.csv") -> list[Phone]:
 
 
 def _load_from_texnomart() -> list[Phone]:
-    """Texnomart katalogidan to'g'ridan-to'g'ri o'qiydi."""
-    phones = texnomart_scraper.scrape_catalog(
+    """Texnomart katalogini lokal cache orqali o'qiydi."""
+    phones = texnomart_cache.load_cached_or_refresh(
+        config.texnomart_cache_path,
+        _scrape_texnomart,
+        ttl_seconds=config.texnomart_cache_ttl,
+    )
+    logger.info("Texnomart'dan %d ta telefon yuklandi", len(phones))
+    return phones
+
+
+def _scrape_texnomart() -> list[Phone]:
+    """Texnomart saytidan to'g'ridan-to'g'ri scrape qiladi."""
+    return texnomart_scraper.scrape_catalog(
         base_url=config.texnomart_base_url,
         max_pages=config.texnomart_max_pages,
         max_items=config.texnomart_max_items,
     )
-    logger.info("Texnomart'dan %d ta telefon yuklandi", len(phones))
-    return phones
 
 
 def load_phones(source: str | None = None) -> list[Phone]:
@@ -173,7 +183,13 @@ def get_phones(source: str | None = None) -> list[Phone]:
 def refresh(source: str | None = None) -> int:
     """Majburiy qayta yuklash (admin /reload). Yuklangan telefonlar sonini qaytaradi."""
     resolved_source = resolve_source(source)
-    _cache_by_source[resolved_source] = load_phones(resolved_source)
+    if resolved_source == "texnomart":
+        _cache_by_source[resolved_source] = texnomart_cache.refresh_cache(
+            config.texnomart_cache_path,
+            _scrape_texnomart,
+        )
+    else:
+        _cache_by_source[resolved_source] = load_phones(resolved_source)
     _loaded_at_by_source[resolved_source] = time.time()
     return len(_cache_by_source[resolved_source])
 

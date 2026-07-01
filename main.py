@@ -200,7 +200,7 @@ def _menu_for(message: Message) -> object:
 WELCOME = (
     "Assalomu alaykum! 👋\n\n"
     "Men telefon tanlashda yordam beraman. Sizga kerakli telefonni oddiy tilda yozing.\n\n"
-    "Avval sizdan qaysi manbadan qidirishni so'rayman: <b>Baza</b> yoki <b>Texnomart</b>.\n\n"
+    "Avval sizdan qaysi manbadan qidirishni so'rayman: <b>✅Baza</b> yoki <b>✅Texnomart</b>.\n\n"
     "Masalan:\n"
     "• <i>12 GB ramli, kuchli kamerali, 5 mln gacha Samsung kerak</i>\n"
     "• <i>arzon Xiaomi, katta batareyka</i>\n"

@@ -4,6 +4,9 @@ Run with: python3 test_texnomart_scraper.py
 """
 from __future__ import annotations
 
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 import sheets
 import texnomart_scraper
 from models import Phone
@@ -51,6 +54,7 @@ def test_extracts_phone_from_catalog_html() -> None:
 def test_load_phones_routes_to_texnomart_when_configured() -> None:
     old_source = sheets.config.phone_source
     old_base_url = sheets.config.texnomart_base_url
+    old_cache_path = sheets.config.texnomart_cache_path
     old_loader = texnomart_scraper.scrape_catalog
 
     sentinel = [Phone(brand="Test", model="Phone", source_label="texno")]
@@ -59,22 +63,26 @@ def test_load_phones_routes_to_texnomart_when_configured() -> None:
         return sentinel
 
     try:
-        sheets.config.phone_source = "texnomart"
-        sheets.config.texnomart_base_url = "https://texnomart.uz/katalog/smartfony/"
-        texnomart_scraper.scrape_catalog = fake_scrape_catalog
+        with TemporaryDirectory() as tmp:
+            sheets.config.phone_source = "texnomart"
+            sheets.config.texnomart_base_url = "https://texnomart.uz/katalog/smartfony/"
+            sheets.config.texnomart_cache_path = str(Path(tmp) / "texnomart_cache.json")
+            texnomart_scraper.scrape_catalog = fake_scrape_catalog
 
-        phones = sheets.load_phones()
+            phones = sheets.load_phones()
 
-        assert phones == sentinel
+            assert phones == sentinel
     finally:
         sheets.config.phone_source = old_source
         sheets.config.texnomart_base_url = old_base_url
+        sheets.config.texnomart_cache_path = old_cache_path
         texnomart_scraper.scrape_catalog = old_loader
 
 
 def test_load_phones_accepts_explicit_source_override() -> None:
     old_source = sheets.config.phone_source
     old_base_url = sheets.config.texnomart_base_url
+    old_cache_path = sheets.config.texnomart_cache_path
     old_loader = texnomart_scraper.scrape_catalog
 
     sentinel = [Phone(brand="Override", model="Phone", source_label="texno")]
@@ -83,22 +91,26 @@ def test_load_phones_accepts_explicit_source_override() -> None:
         return sentinel
 
     try:
-        sheets.config.phone_source = "sheet"
-        sheets.config.texnomart_base_url = "https://texnomart.uz/katalog/smartfony/"
-        texnomart_scraper.scrape_catalog = fake_scrape_catalog
+        with TemporaryDirectory() as tmp:
+            sheets.config.phone_source = "sheet"
+            sheets.config.texnomart_base_url = "https://texnomart.uz/katalog/smartfony/"
+            sheets.config.texnomart_cache_path = str(Path(tmp) / "texnomart_cache.json")
+            texnomart_scraper.scrape_catalog = fake_scrape_catalog
 
-        phones = sheets.load_phones(source="texnomart")
+            phones = sheets.load_phones(source="texnomart")
 
-        assert phones == sentinel
+            assert phones == sentinel
     finally:
         sheets.config.phone_source = old_source
         sheets.config.texnomart_base_url = old_base_url
+        sheets.config.texnomart_cache_path = old_cache_path
         texnomart_scraper.scrape_catalog = old_loader
 
 
 def test_load_phones_returns_empty_for_empty_texnomart_scrape_without_fallback() -> None:
     old_source = sheets.config.phone_source
     old_base_url = sheets.config.texnomart_base_url
+    old_cache_path = sheets.config.texnomart_cache_path
     old_loader = texnomart_scraper.scrape_catalog
     old_sheet_loader = sheets._load_from_sheet
     old_csv_loader = sheets._load_from_csv
@@ -110,18 +122,21 @@ def test_load_phones_returns_empty_for_empty_texnomart_scrape_without_fallback()
         raise AssertionError("fallback loader should not be called for texnomart source")
 
     try:
-        sheets.config.phone_source = "texnomart"
-        sheets.config.texnomart_base_url = "https://texnomart.uz/katalog/smartfony/"
-        texnomart_scraper.scrape_catalog = fake_scrape_catalog
-        sheets._load_from_sheet = fail_if_called
-        sheets._load_from_csv = fail_if_called
+        with TemporaryDirectory() as tmp:
+            sheets.config.phone_source = "texnomart"
+            sheets.config.texnomart_base_url = "https://texnomart.uz/katalog/smartfony/"
+            sheets.config.texnomart_cache_path = str(Path(tmp) / "texnomart_cache.json")
+            texnomart_scraper.scrape_catalog = fake_scrape_catalog
+            sheets._load_from_sheet = fail_if_called
+            sheets._load_from_csv = fail_if_called
 
-        phones = sheets.load_phones(source="texnomart")
+            phones = sheets.load_phones(source="texnomart")
 
-        assert phones == []
+            assert phones == []
     finally:
         sheets.config.phone_source = old_source
         sheets.config.texnomart_base_url = old_base_url
+        sheets.config.texnomart_cache_path = old_cache_path
         texnomart_scraper.scrape_catalog = old_loader
         sheets._load_from_sheet = old_sheet_loader
         sheets._load_from_csv = old_csv_loader

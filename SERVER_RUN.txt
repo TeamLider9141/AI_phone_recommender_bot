@@ -40,8 +40,13 @@ Agar dependency o'zgargan bo'lsa, qayta o'rnatish kerak bo'ladi. Kod yangilangan
 keyin service restart qilinmasa, eski versiya ishlashda davom etadi.
 
 Texnomart sekin ishlasa .env ichida shu qiymatlarni kichikroq qiling:
-TEXNOMART_MAX_PAGES=5
-TEXNOMART_MAX_ITEMS=50
+TEXNOMART_MAX_PAGES=16
+TEXNOMART_MAX_ITEMS=250
+TEXNOMART_CACHE_PATH=texnomart_cache.json
+TEXNOMART_CACHE_TTL=1800
+
+Izoh: birinchi Texnomart so'rovi cache tayyorlash uchun sekinroq bo'lishi mumkin.
+Keyingi so'rovlar JSON cache orqali tez ishlaydi va manba linklari saqlanadi.
 
 9) Production uchun systemd tavsiya qilinadi
 
