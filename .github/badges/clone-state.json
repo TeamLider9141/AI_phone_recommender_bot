@@ -1,6 +1,6 @@
 {
-  "total": 428,
-  "lastDate": "2026-07-15",
+  "total": 435,
+  "lastDate": "2026-07-17",
   "history": [
     {
       "date": "2026-06-30",
@@ -81,6 +81,16 @@
       "date": "2026-07-15",
       "daily": 5,
       "cumulative": 428
+    },
+    {
+      "date": "2026-07-16",
+      "daily": 5,
+      "cumulative": 433
+    },
+    {
+      "date": "2026-07-17",
+      "daily": 2,
+      "cumulative": 435
     }
   ]
 }
