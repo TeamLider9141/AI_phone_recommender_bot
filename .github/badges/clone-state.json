@@ -1,6 +1,6 @@
 {
-  "total": 498,
-  "lastDate": "2026-07-29",
+  "total": 552,
+  "lastDate": "2026-08-03",
   "history": [
     {
       "date": "2026-06-30",
@@ -151,6 +151,31 @@
       "date": "2026-07-29",
       "daily": 10,
       "cumulative": 498
+    },
+    {
+      "date": "2026-07-30",
+      "daily": 5,
+      "cumulative": 503
+    },
+    {
+      "date": "2026-07-31",
+      "daily": 31,
+      "cumulative": 534
+    },
+    {
+      "date": "2026-08-01",
+      "daily": 3,
+      "cumulative": 537
+    },
+    {
+      "date": "2026-08-02",
+      "daily": 14,
+      "cumulative": 551
+    },
+    {
+      "date": "2026-08-03",
+      "daily": 1,
+      "cumulative": 552
     }
   ]
 }
