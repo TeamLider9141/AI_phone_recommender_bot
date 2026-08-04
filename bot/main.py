@@ -235,18 +235,38 @@ def bot_commands() -> list[BotCommand]:
     ]
 
 
-def startup_status_text(phone_count: int) -> str:
+def startup_status_text(phone_count: int, error: str | None = None) -> str:
+    if error:
+        return (
+            f"{STARTUP_TITLE}, lekin ⚠️ baza yuklanmadi.\n"
+            f"Xato: {error}\n"
+            "Bot ishlayapti — /reload bilan bazani qayta yuklab ko'ring."
+        )
     return f"{STARTUP_TITLE}.\nBaza: {phone_count} ta telefon yuklandi."
+
+
+async def load_phones_for_startup() -> tuple[list, str | None]:
+    """Bazani yuklaydi. Yiqilsa exception ko'tarmaydi — (bo'sh ro'yxat, xato matni).
+
+    Startup'da baza yuklash yiqilsa bot butunlay ko'tarilmay qolardi va admin
+    hech qanday xabar olmasdi (systemd jimgina qayta urinaverardi). Endi bot
+    ko'tariladi va admin nima bo'lganini biladi.
+    """
+    try:
+        return await asyncio.to_thread(sheets.get_phones), None
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("Startup'da bazani yuklab bo'lmadi")
+        return [], f"{type(exc).__name__}: {exc}"
 
 
 async def setup_bot_commands(bot: Bot) -> None:
     await bot.set_my_commands(bot_commands())
 
 
-async def notify_startup(bot: Bot, phone_count: int) -> None:
+async def notify_startup(bot: Bot, phone_count: int, error: str | None = None) -> None:
     if not config.admin_ids:
         return
-    text = startup_status_text(phone_count)
+    text = startup_status_text(phone_count, error)
     for admin_id in config.admin_ids:
         try:
             await bot.send_message(admin_id, text)
@@ -624,12 +644,14 @@ async def main() -> None:
     if not config.ai_enabled:
         logger.warning("GEMINI_API_KEY yo'q — bot sodda (regex) rejimda ishlaydi.")
 
-    # Startup'da bazani oldindan yuklab qo'yamiz (birinchi so'rov tez bo'lsin).
-    phones = await asyncio.to_thread(sheets.get_phones)
-
+    # Bot avval yaratiladi: keyingi qadamlar yiqilsa ham adminga xabar bera olamiz.
     bot = Bot(config.telegram_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+
+    # Startup'da bazani oldindan yuklab qo'yamiz (birinchi so'rov tez bo'lsin).
+    phones, load_error = await load_phones_for_startup()
+
     await setup_bot_commands(bot)
-    await notify_startup(bot, len(phones))
+    await notify_startup(bot, len(phones), load_error)
     dp = build_dispatcher()
     logger.info("Bot ishga tushdi.")
     await dp.start_polling(bot)
