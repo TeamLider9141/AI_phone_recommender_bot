@@ -13,12 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Repo'ni checkout qilish
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Python o'rnatish
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+
+      - name: TRAFFIC_PAT secret'ini tekshirish
+        env:
+          TRAFFIC_PAT: ${{ secrets.TRAFFIC_PAT }}
+        run: |
+          if [ -z "$TRAFFIC_PAT" ]; then
+            echo "::warning::secrets.TRAFFIC_PAT o'rnatilmagan. Settings > Secrets and variables > Actions bo'limiga 'repo' scope'li classic PAT qo'shing."
+          else
+            echo "TRAFFIC_PAT topildi (uzunligi: ${#TRAFFIC_PAT})."
+          fi
 
       - name: Klon statistikasi, badge va grafikni yangilash
         env:
@@ -27,7 +37,7 @@ jobs:
         run: python3 .github/scripts/update_clone_stats.py
 
       - name: O'zgarishlarni commit qilish
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: klon statistikasi va grafik yangilandi"
           file_pattern: >-

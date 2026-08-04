@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BADGE_FILE = REPO_ROOT / ".github/badges/clone-count.json"
@@ -23,17 +25,49 @@ CHART_END = "<!-- CLONE_CHART:END -->"
 HISTORY_LIMIT = 60  # grafik URL uzunligini cheklash uchun oxirgi N kun
 
 
-def fetch_traffic(repo: str, token: str) -> dict:
+def fetch_traffic(repo: str, token: str) -> dict | None:
+    """Traffic API'dan klon ma'lumotini oladi.
+
+    Xatolik bo'lsa None qaytaradi — bunda mavjud statistika saqlanib qoladi va
+    workflow qulamaydi, faqat ogohlantirish yoziladi.
+    """
     url = f"https://api.github.com/repos/{repo}/traffic/clones"
     req = urllib.request.Request(
         url,
         headers={
             "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "update-clone-stats",
         },
     )
-    with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310
+            return json.loads(resp.read().decode("utf-8"))
+    except HTTPError as exc:
+        body = ""
+        try:
+            body = exc.read().decode("utf-8", errors="ignore")[:500]
+        except Exception:  # noqa: BLE001
+            pass
+        print(f"::warning::Traffic API xatosi: HTTP {exc.code} {exc.reason}")
+        if body:
+            print(f"::warning::Javob: {body}")
+        if exc.code == 401:
+            print(
+                "::warning::TRAFFIC_PAT yaroqsiz yoki muddati tugagan. "
+                "Yangi classic PAT yarating (scope: repo) va Settings > Secrets and "
+                "variables > Actions > TRAFFIC_PAT ni yangilang."
+            )
+        elif exc.code in (403, 404):
+            print(
+                "::warning::Token'da repo'ga admin/push huquqi yo'q. Traffic API "
+                "faqat repo egasi darajasidagi token bilan ishlaydi (GITHUB_TOKEN yetmaydi)."
+            )
+        return None
+    except (URLError, TimeoutError) as exc:
+        print(f"::warning::Tarmoq xatosi: {exc}")
+        return None
 
 
 def load_state() -> dict:
@@ -134,11 +168,26 @@ def update_readme(chart_url: str) -> None:
 
 
 def main() -> None:
-    repo = os.environ["REPO"]
-    token = os.environ.get("GH_TOKEN", "")
+    repo = os.environ.get("REPO", "").strip()
+    if not repo:
+        print("::error::REPO muhit o'zgaruvchisi o'rnatilmagan.")
+        sys.exit(1)
+
+    token = (os.environ.get("GH_TOKEN") or os.environ.get("TRAFFIC_PAT") or "").strip()
 
     state = load_state()
-    traffic = fetch_traffic(repo, token) if token else {"clones": []}
+    if token:
+        traffic = fetch_traffic(repo, token)
+    else:
+        print(
+            "::warning::TRAFFIC_PAT sozlanmagan — yangi klonlar hisoblanmaydi. "
+            "Settings > Secrets and variables > Actions bo'limida qo'shing."
+        )
+        traffic = None
+
+    if traffic is None:
+        # API'ga ulanib bo'lmadi: mavjud holatni o'zgartirmasdan qayta yozamiz.
+        traffic = {"clones": []}
 
     new_state = update_state(state, traffic)
     STATE_FILE.write_text(json.dumps(new_state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
