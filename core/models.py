@@ -22,6 +22,9 @@ class Phone:
     detail_url: Optional[str] = None
     source_label: Optional[str] = None    # "texno" yoki "baza"
     price: Optional[int] = None          # so'm yoki boshqa birlik
+    # Quyidagi ikkisi rang variantlari guruhlanganda to'ldiriladi (group_variants).
+    price_to: Optional[int] = None       # narx oralig'ining yuqori chegarasi; teng bo'lsa None
+    colors: list[str] = field(default_factory=list)  # guruhdagi barcha ranglar
 
     def title(self) -> str:
         brand = (self.brand or "").strip()
@@ -58,11 +61,19 @@ class Phone:
             bits.append(f"{self.battery}mAh")
         if self.os:
             bits.append(self.os)
-        if self.color:
-            bits.append(self.color)
+        # Guruhlangan bo'lsa barcha ranglar, aks holda yagona rang.
+        colors = self.colors or ([self.color] if self.color else [])
+        if colors:
+            bits.append(", ".join(colors))
         spec = " · ".join(bits)
         if self.price:
-            spec = f"{spec}\n💰 {self.price:,} so'm".replace(",", " ")
+            if self.price_to and self.price_to != self.price:
+                price_text = f"{self.price:,} – {self.price_to:,}"
+            else:
+                price_text = f"{self.price:,}"
+            # Faqat narxdagi minglik ajratgichni almashtiramiz — ranglar ro'yxatidagi
+            # vergullar saqlanib qolishi kerak.
+            spec = f"{spec}\n💰 {price_text.replace(',', ' ')} so'm"
         return spec
 
 

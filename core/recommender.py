@@ -160,6 +160,54 @@ def _score(p: Phone, f: QueryFilter) -> float:
     return score
 
 
+def _variant_key(p: Phone) -> tuple:
+    """Guruhlash kaliti: bir xil manba + brend + model + RAM + xotira = bitta telefon."""
+    return (
+        p.resolved_source_label(),
+        (p.brand or "").strip().lower(),
+        (p.model or "").strip().lower(),
+        p.ram,
+        p.storage,
+    )
+
+
+def _merge_variants(members: list[Phone]) -> Phone:
+    """Bir guruh rang variantidan yagona qator yasaydi (eng arzoni asos qilib olinadi)."""
+    priced = [m for m in members if m.price is not None]
+    base = min(priced, key=lambda m: m.price) if priced else members[0]
+
+    low = high = None
+    if priced:
+        low = min(m.price for m in priced)
+        high = max(m.price for m in priced)
+
+    colors: list[str] = []
+    for m in members:
+        for color in (m.colors or ([m.color] if m.color else [])):
+            if color not in colors:
+                colors.append(color)
+
+    return replace(
+        base,
+        price=low if low is not None else base.price,
+        price_to=high if (low is not None and high != low) else None,
+        colors=colors,
+    )
+
+
+def group_variants(phones: list[Phone]) -> list[Phone]:
+    """Bir xil spec'li rang variantlarini bitta qatorga yig'adi.
+
+    Texnomart katalogida har rang alohida mahsulot bo'lgani uchun bitta telefon
+    2-4 marta chiqib ketardi. Narxlar farq qilsa oraliq ko'rsatiladi, teng bo'lsa
+    yagona narx qoladi. Guruhlar birinchi uchragan tartibda qaytariladi.
+    """
+    groups: dict[tuple, list[Phone]] = {}
+    for phone in phones:
+        groups.setdefault(_variant_key(phone), []).append(phone)
+    return [_merge_variants(members) for members in groups.values()]
+
+
 def recommend(phones: list[Phone], f: QueryFilter, limit: int = 5) -> tuple[list[Phone], bool]:
     """Mos telefonlarni qaytaradi.
 
@@ -176,6 +224,9 @@ def recommend(phones: list[Phone], f: QueryFilter, limit: int = 5) -> tuple[list
                            camera_priority=f.camera_priority, price_sensitive=f.price_sensitive)
         matched = [p for p in phones if _matches_hard(p, soft)]
         relaxed = bool(matched)
+
+    # Rang variantlarini birlashtiramiz — limit variantlarni emas, modellarni sanaydi.
+    matched = group_variants(matched)
 
     # "X atrofida" so'ralib, aniq saralash berilmagan bo'lsa — narxga yaqinlik default.
     eff = f
