@@ -86,8 +86,14 @@ def load_cached_or_refresh(
     ttl_seconds: int,
     now: float | None = None,
     background: bool = True,
+    max_age_seconds: int = 0,
 ) -> list[Phone]:
-    """Fresh cache'ni qaytaradi; stale cache bo'lsa darhol qaytarib, orqada yangilaydi."""
+    """Fresh cache'ni qaytaradi; stale cache bo'lsa darhol qaytarib, orqada yangilaydi.
+
+    max_age_seconds > 0 bo'lsa, undan eski cache umuman ishlatilmaydi — sinxron
+    yangilanadi. Bot uzoq to'xtab qolgandan keyin oylik eski narxlarni ko'rsatib
+    qo'ymaslik uchun. Yangilash yiqilsa baribir eski ma'lumot qaytariladi.
+    """
     cache_path = Path(path)
     current = time.time() if now is None else now
     cached = _read_cache(cache_path)
@@ -95,9 +101,22 @@ def load_cached_or_refresh(
         return refresh_cache(cache_path, loader, now=current)
 
     generated_at, phones = cached
-    is_fresh = ttl_seconds <= 0 or (current - generated_at) < ttl_seconds
+    age = current - generated_at
+    is_fresh = ttl_seconds <= 0 or age < ttl_seconds
     if is_fresh:
         return phones
+
+    # Juda eski: eskisini berish narx botida noto'g'ri javob demak.
+    if max_age_seconds > 0 and age >= max_age_seconds:
+        logger.warning(
+            "Texnomart cache juda eski (%.1f soat) — sinxron yangilanmoqda", age / 3600
+        )
+        try:
+            refreshed = refresh_cache(cache_path, loader, now=current)
+        except Exception:  # noqa: BLE001 — yangilash yiqilsa eskisi hech yo'qdan yaxshi
+            logger.exception("Texnomart cache sinxron yangilashda xato")
+            return phones
+        return refreshed or phones
 
     if background:
         _start_background_refresh(cache_path, loader)

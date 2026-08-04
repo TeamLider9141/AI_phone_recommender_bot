@@ -133,6 +133,7 @@ def _load_from_texnomart() -> list[Phone]:
         config.texnomart_cache_path,
         _scrape_texnomart,
         ttl_seconds=config.texnomart_cache_ttl,
+        max_age_seconds=config.texnomart_cache_max_age,
     )
     logger.info("Texnomart'dan %d ta telefon yuklandi", len(phones))
     return phones
